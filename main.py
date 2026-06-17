@@ -44,7 +44,7 @@ import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from fastapi.responses import JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse
 
 from aerostream.cache import CacheManager
 from aerostream.config import settings
@@ -142,29 +142,23 @@ app.include_router(router)
 
 
 # ── Root Endpoint ──
-@app.get("/", tags=["Meta"])
-async def root():
-    """Landing endpoint with API overview and quick links."""
-    return {
-        "engine": "AeroStream",
-        "version": settings.app_version,
-        "tagline": "Hyper-Personalization at Scale — Sub-Millisecond, Zero-Blocking",
-        "endpoints": {
-            "ingest_event": "POST /api/v1/stream-event",
-            "ingest_batch": "POST /api/v1/stream-events/batch",
-            "get_profile": "GET  /api/v1/profile/{user_id}",
-            "health": "GET  /api/v1/health",
-            "metrics": "GET  /api/v1/metrics/summary",
-            "simulate": "POST /api/v1/simulate/burst?count=1000",
-            "docs": "GET  /docs",
-        },
-        "architecture": {
-            "cache_shards": settings.cache.num_shards,
-            "max_cached_profiles": settings.cache.max_entries,
-            "worker_count": settings.worker.num_workers,
-            "queue_capacity": settings.worker.queue_maxsize,
-        },
-    }
+@app.get("/", response_class=HTMLResponse, include_in_schema=False)
+async def serve_telemetry_dashboard():
+    """
+    Reads index.html from workspace root and returns it as the entrypoint response.
+    Bypasses standard JSON serialization to serve native markup immediately.
+    """
+    import os
+    file_path = "index.html"
+    try:
+        with open(file_path, "r", encoding="utf-8") as f:
+            html_content = f.read()
+        return HTMLResponse(content=html_content, status_code=200)
+    except FileNotFoundError:
+        return HTMLResponse(
+            content="<h1>AeroStream Telemetry System Interface // index.html not found in root</h1>",
+            status_code=404
+        )
 
 
 # ─── Entry Point ─────────────────────────────────────────────────────────────
