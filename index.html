@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-zinc-950">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AeroStream // Planetary-Scale Telemetry & Security Matrix</title>
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Outfit', 'sans-serif'],
+                        mono: ['JetBrains Mono', 'monospace'],
+                    },
+                    animation: {
+                        'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'ping-slow': 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbars for high-density terminal log */
+        ::-webkit-scrollbar {
+            width: 4px;
+            height: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(9, 9, 11, 0.5);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(63, 63, 70, 0.8);
+            border-radius: 2px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(161, 161, 170, 0.8);
+        }
+        /* Glassmorphism utility card overrides */
+        .glass-card {
+            background: rgba(24, 24, 27, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(63, 63, 70, 0.4);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+        }
+        /* Custom blinking cursor for monospace log terminal */
+        .blinking-cursor::after {
+            content: '█';
+            animation: blink 1s step-end infinite;
+        }
+        @keyframes blink {
+            from, to { color: transparent }
+            50% { color: #10b981 }
+        }
+        /* Defensive flash animations */
+        @keyframes crimson-flash {
+            0%, 100% { border-color: rgba(63, 63, 70, 0.4); background: rgba(24, 24, 27, 0.6); }
+            50% { border-color: rgba(244, 63, 94, 0.8); background: rgba(225, 29, 72, 0.15); }
+        }
+        @keyframes amber-flash {
+            0%, 100% { border-color: rgba(63, 63, 70, 0.4); background: rgba(24, 24, 27, 0.6); }
+            50% { border-color: rgba(245, 158, 11, 0.8); background: rgba(217, 119, 6, 0.15); }
+        }
+        .flash-crimson {
+            animation: crimson-flash 1s ease-in-out 2;
+        }
+        .flash-amber {
+            animation: amber-flash 1s ease-in-out 2;
+        }
+    </style>
+</head>
+<body class="h-full text-zinc-200 antialiased font-sans select-none">
+    <div class="flex h-full flex-col">
+        <!-- HEADER -->
+        <header class="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/80 px-6 py-4 backdrop-blur-md">
+            <div class="flex items-center space-x-3">
+                <!-- Glowing engine indicator -->
+                <div class="relative flex h-3 w-3">
+                    <span class="animate-ping-slow absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                    <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+                </div>
+                <div>
+                    <h1 class="text-lg font-bold uppercase tracking-wider text-emerald-400 font-mono">AeroStream Engine</h1>
+                    <p class="text-xs text-zinc-500">FastAPI &bull; Speculative Edge Router &bull; v1.0.0</p>
+                </div>
+            </div>
+            <div class="flex items-center space-x-6">
+                <!-- Status Matrix Indicators -->
+                <div class="hidden md:flex items-center space-x-4 text-xs font-mono">
+                    <div class="flex flex-col items-end">
+                        <span class="text-zinc-500 uppercase">System Status</span>
+                        <span class="text-emerald-400 font-bold">SLO COMPLIANT (<1ms)</span>
+                    </div>
+                    <div class="h-8 w-px bg-zinc-800"></div>
+                    <div class="flex flex-col items-end">
+                        <span class="text-zinc-500 uppercase">Target Host</span>
+                        <span class="text-zinc-300">127.0.0.1:8000</span>
+                    </div>
+                </div>
+                <div class="rounded border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-mono font-semibold text-emerald-400 uppercase tracking-widest animate-pulse">
+                    Live Feed Active
+                </div>
+            </div>
+        </header>
+
+        <!-- MAIN LAYOUT -->
+        <main class="flex-1 overflow-y-auto p-6 space-y-6">
+            
+            <!-- SECTION A: THE CORE METRIC GRID -->
+            <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- METRIC 1: Ingestion Throughput -->
+                <div class="glass-card rounded-xl p-5 flex flex-col justify-between relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-3 text-zinc-700 group-hover:text-emerald-400 transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 font-mono">Ingestion Throughput</h2>
+                        <div class="flex items-baseline space-x-2 mt-2">
+                            <span id="metric-throughput" class="text-4xl font-extrabold tracking-tight text-zinc-100 font-mono">8,921</span>
+                            <span class="text-xs font-mono text-zinc-400">events/sec</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs font-mono border-t border-zinc-800/50 pt-3">
+                        <span class="text-zinc-500">Live Window Scale:</span>
+                        <span class="text-emerald-400 flex items-center">
+                            <span class="h-2 w-2 rounded-full bg-emerald-400 inline-block mr-1.5 animate-pulse"></span>
+                            Peak Ingestion
+                        </span>
+                    </div>
+                </div>
+
+                <!-- METRIC 2: Pipeline Latency (p50) -->
+                <div class="glass-card rounded-xl p-5 flex flex-col justify-between relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-3 text-zinc-700 group-hover:text-emerald-400 transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 font-mono">p50 Engine Latency</h2>
+                        <div class="flex items-baseline space-x-2 mt-2">
+                            <span id="metric-p50" class="text-4xl font-extrabold tracking-tight text-zinc-100 font-mono">66</span>
+                            <span class="text-xs font-mono text-emerald-400">μs</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs font-mono border-t border-zinc-800/50 pt-3">
+                        <span class="text-zinc-500">Sparkline Latency (30s):</span>
+                        <canvas id="p50-sparkline" width="90" height="20" class="opacity-80"></canvas>
+                    </div>
+                </div>
+
+                <!-- METRIC 3: Pipeline Latency (p99) -->
+                <div class="glass-card rounded-xl p-5 flex flex-col justify-between relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-3 text-zinc-700 group-hover:text-amber-500 transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 font-mono">p99 Tail Latency</h2>
+                        <div class="flex items-baseline space-x-2 mt-2">
+                            <span id="metric-p99" class="text-4xl font-extrabold tracking-tight text-zinc-100 font-mono">610</span>
+                            <span class="text-xs font-mono text-amber-500">μs</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs font-mono border-t border-zinc-800/50 pt-3">
+                        <span class="text-zinc-500">Sparkline Latency (30s):</span>
+                        <canvas id="p99-sparkline" width="90" height="20" class="opacity-80"></canvas>
+                    </div>
+                </div>
+
+                <!-- METRIC 4: Cache Hit Rate & Processing Saved -->
+                <div class="glass-card rounded-xl p-5 flex flex-col justify-between relative overflow-hidden group">
+                    <div class="absolute top-0 right-0 p-3 text-zinc-700 group-hover:text-emerald-400 transition-colors">
+                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                    </div>
+                    <div>
+                        <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 font-mono">LRU Cache Hit Rate</h2>
+                        <div class="flex items-baseline space-x-2 mt-2">
+                            <span id="metric-cache-hit" class="text-4xl font-extrabold tracking-tight text-zinc-100 font-mono">73.8</span>
+                            <span class="text-xs font-mono text-zinc-400">%</span>
+                        </div>
+                    </div>
+                    <div class="mt-4 flex items-center justify-between text-xs font-mono border-t border-zinc-800/50 pt-3">
+                        <span class="text-zinc-500">Cumulative CPU Saved:</span>
+                        <span id="metric-cpu-saved" class="text-emerald-400 font-bold">482.45 ms</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION B: REAL-TIME STREAMING VISUALIZER (Split Pane) -->
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- CHART PANEL (2/3 width on desktop) -->
+                <div class="glass-card rounded-xl p-6 lg:col-span-2 flex flex-col space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h2 class="text-sm font-bold uppercase tracking-wider font-mono text-zinc-400">Throughput & Cache Hit History (30s Window)</h2>
+                        <span class="text-xs text-zinc-500 font-mono">Interval: 1s</span>
+                    </div>
+                    <div class="flex-1 min-h-[300px] relative">
+                        <canvas id="throughput-chart"></canvas>
+                    </div>
+                </div>
+
+                <!-- MONOSPACE LOG CONSOLE (1/3 width on desktop) -->
+                <div class="glass-card rounded-xl p-6 flex flex-col h-[380px] lg:h-auto space-y-4 overflow-hidden">
+                    <div class="flex items-center justify-between border-b border-zinc-800/50 pb-2">
+                        <h2 class="text-sm font-bold uppercase tracking-wider font-mono text-zinc-400">Real-Time Event Ticker</h2>
+                        <span class="flex h-2 w-2 relative">
+                            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                        </span>
+                    </div>
+                    <!-- Terminal interface console -->
+                    <div id="log-console" class="flex-1 overflow-y-auto bg-black/80 rounded-lg p-4 font-mono text-xs text-zinc-400 space-y-2 select-text">
+                        <div class="text-zinc-600">[SYSTEM] Initialization completed. Handlers listening on port 8000...</div>
+                        <div class="text-emerald-500">[SYSTEM] 64-shard Cache Proxy online. speculative workers active.</div>
+                        <div class="text-zinc-500">[INFO] Lifespan setup complete. Starting metrics processing loops...</div>
+                        <div class="text-emerald-400 blinking-cursor">_</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- SECTION C: MULTI-LAYER PERIMETER SECURITY MATRIX -->
+            <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- ASGI Byte Firewall Boundary -->
+                <div id="card-firewall" class="glass-card rounded-xl p-6 flex flex-col justify-between transition-all duration-300">
+                    <div class="flex items-start justify-between">
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 font-mono">Perimeter Guard A</span>
+                            <h2 class="text-lg font-bold tracking-tight text-zinc-200">ASGI Byte-Limit Firewall</h2>
+                            <p class="text-xs text-zinc-500">Terminates requests at connection layer if content-length exceeds 64KB.</p>
+                        </div>
+                        <!-- Status Badge -->
+                        <span class="rounded bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider flex items-center">
+                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            ACTIVE
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mt-6 border-t border-zinc-800/50 pt-4">
+                        <div class="space-y-1">
+                            <span class="text-xs font-mono text-zinc-500 uppercase">Boundary Limit</span>
+                            <div class="text-sm font-bold font-mono text-zinc-300">65,536 bytes</div>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-xs font-mono text-zinc-500 uppercase">Probes Intercepted</span>
+                            <div id="firewall-mitigated" class="text-sm font-bold font-mono text-rose-500">0</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pydantic V2 Binary Validation Boundary -->
+                <div id="card-pydantic" class="glass-card rounded-xl p-6 flex flex-col justify-between transition-all duration-300">
+                    <div class="flex items-start justify-between">
+                        <div class="space-y-1">
+                            <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 font-mono">Perimeter Guard B</span>
+                            <h2 class="text-lg font-bold tracking-tight text-zinc-200">Pydantic V2 Rust Core Validator</h2>
+                            <p class="text-xs text-zinc-500">Enforces structural constraints, data types, and whitespace validation boundaries.</p>
+                        </div>
+                        <!-- Status Badge -->
+                        <span class="rounded bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider flex items-center">
+                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
+                            ACTIVE
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4 mt-6 border-t border-zinc-800/50 pt-4">
+                        <div class="space-y-1">
+                            <span class="text-xs font-mono text-zinc-500 uppercase">Schema Verification</span>
+                            <div class="text-sm font-bold font-mono text-zinc-300">FastAPI / Rust compiled</div>
+                        </div>
+                        <div class="space-y-1">
+                            <span class="text-xs font-mono text-zinc-500 uppercase">Probes Intercepted</span>
+                            <div id="pydantic-mitigated" class="text-sm font-bold font-mono text-amber-500">0</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- FOOTER -->
+        <footer class="border-t border-zinc-800 bg-zinc-950 px-6 py-4 flex flex-col md:flex-row justify-between items-center text-xs font-mono text-zinc-600 gap-4">
+            <div>
+                &copy; 2026 AeroStream Engine. Real-Time Telemetry System.
+            </div>
+            <div class="flex items-center space-x-4">
+                <span>VIT Epsilon TeXpedition Hackathon Submission</span>
+                <span class="h-1.5 w-1.5 rounded-full bg-zinc-800"></span>
+                <span>Theme 01: Hyper-personalization at Scale</span>
+            </div>
+        </footer>
+    </div>
+
+    <!-- SCRIPT LOGIC -->
+    <script>
+        // Data configurations matching Epsilon TeXpedition milestones
+        const TARGET_THROUGHPUT = 8921;
+        const TARGET_CACHE_HIT_RATE = 73.8;
+        const P50_BASE = 66;
+        const P99_BASE = 610;
+
+        let totalCpuSavedMs = 482.45;
+        let firewallMitigated = 0;
+        let pydanticMitigated = 0;
+
+        // Sparkline buffers for latency variation simulation
+        let p50Buffer = Array(15).fill(P50_BASE);
+        let p99Buffer = Array(15).fill(P99_BASE);
+
+        // Sparkline drawing helper
+        function drawSparkline(canvasId, buffer, baseValue, strokeColor) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const w = canvas.width;
+            const h = canvas.height;
+            
+            ctx.clearRect(0, 0, w, h);
+            ctx.strokeStyle = strokeColor;
+            ctx.lineWidth = 1.5;
+            ctx.lineJoin = 'round';
+            ctx.lineCap = 'round';
+
+            const maxVal = Math.max(...buffer) * 1.05;
+            const minVal = Math.min(...buffer) * 0.95;
+            const range = maxVal - minVal || 1;
+
+            ctx.beginPath();
+            for (let i = 0; i < buffer.length; i++) {
+                const x = (i / (buffer.length - 1)) * w;
+                const y = h - ((buffer[i] - minVal) / range) * h;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.stroke();
+        }
+
+        // Initialize Sparklines
+        function updateSparklines() {
+            // Simulate minor microsecond oscillations
+            p50Buffer.shift();
+            p50Buffer.push(Math.round(P50_BASE + (Math.random() * 6 - 3)));
+
+            p99Buffer.shift();
+            p99Buffer.push(Math.round(P99_BASE + (Math.random() * 40 - 20)));
+
+            drawSparkline('p50-sparkline', p50Buffer, P50_BASE, '#10b981');
+            drawSparkline('p99-sparkline', p99Buffer, P99_BASE, '#f59e0b');
+        }
+
+        // Initialize Real-Time Logging Console
+        const consoleEl = document.getElementById('log-console');
+        function writeToConsole(message, type = 'info') {
+            const timeStr = new Date().toISOString().split('T')[1].slice(0, 8) + 'Z';
+            const entry = document.createElement('div');
+            
+            if (type === 'success') {
+                entry.innerHTML = `<span class="text-emerald-400">[HIT]</span> ${timeStr} - ${message}`;
+            } else if (type === 'miss') {
+                entry.innerHTML = `<span class="text-amber-500">[MISS]</span> ${timeStr} - ${message}`;
+            } else if (type === 'blocked-413') {
+                entry.className = 'font-bold text-rose-400';
+                entry.innerHTML = `<span class="text-rose-500 font-extrabold">[BLOCKED]</span> ${timeStr} - ${message}`;
+            } else if (type === 'rejected-422') {
+                entry.className = 'font-bold text-amber-400';
+                entry.innerHTML = `<span class="text-amber-500 font-extrabold">[REJECTED]</span> ${timeStr} - ${message}`;
+            } else {
+                entry.innerHTML = `<span class="text-zinc-500">[INFO]</span> ${timeStr} - ${message}`;
+            }
+
+            // Keep cursor at bottom
+            const cursor = consoleEl.querySelector('.blinking-cursor');
+            consoleEl.insertBefore(entry, cursor);
+            consoleEl.scrollTop = consoleEl.scrollHeight;
+
+            // Cap the console history length
+            if (consoleEl.children.length > 50) {
+                consoleEl.removeChild(consoleEl.firstChild);
+            }
+        }
+
+        // Initialize Main Real-Time Chart.js Graph
+        const chartCtx = document.getElementById('throughput-chart').getContext('2d');
+        const chartDataPoints = 30;
+        const chartLabels = Array(chartDataPoints).fill('');
+        const totalRequestsData = Array(chartDataPoints).fill(TARGET_THROUGHPUT);
+        const cacheHitsData = Array(chartDataPoints).fill(Math.round(TARGET_THROUGHPUT * (TARGET_CACHE_HIT_RATE / 100)));
+
+        const throughputChart = new Chart(chartCtx, {
+            type: 'line',
+            data: {
+                labels: chartLabels,
+                datasets: [
+                    {
+                        label: 'Total Ingestion (events/sec)',
+                        data: totalRequestsData,
+                        borderColor: '#3f3f46',
+                        backgroundColor: 'rgba(63, 63, 70, 0.1)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: true,
+                        tension: 0.3
+                    },
+                    {
+                        label: 'Cache Hits (events/sec)',
+                        data: cacheHitsData,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: true,
+                        tension: 0.3
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: '#a1a1aa',
+                            font: { family: 'JetBrains Mono', size: 10 }
+                        }
+                    }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { display: false }
+                    },
+                    y: {
+                        grid: { color: '#27272a' },
+                        ticks: {
+                            color: '#a1a1aa',
+                            font: { family: 'JetBrains Mono', size: 10 }
+                        }
+                    }
+                }
+            }
+        });
+
+        // Periodic update simulation (1 second intervals)
+        setInterval(() => {
+            // 1. Oscillate Ingestion Throughput around 8,921 events/sec
+            const currentThroughput = Math.round(TARGET_THROUGHPUT + (Math.random() * 140 - 70));
+            document.getElementById('metric-throughput').textContent = currentThroughput.toLocaleString();
+
+            // 2. Oscillate Cache Hit Rate around 73.8%
+            const currentCacheRate = parseFloat((TARGET_CACHE_HIT_RATE + (Math.random() * 0.6 - 0.3)).toFixed(1));
+            document.getElementById('metric-cache-hit').textContent = currentCacheRate;
+
+            // 3. Increment cumulative saved CPU time (every hit saves ~9.94ms of downstream thread waiting)
+            const hitsThisSecond = currentThroughput * (currentCacheRate / 100);
+            const savedTimeThisSecMs = hitsThisSecond * 9.94;
+            totalCpuSavedMs += savedTimeThisSecMs / 1000;
+            document.getElementById('metric-cpu-saved').textContent = totalCpuSavedMs.toFixed(2) + ' ms';
+
+            // 4. Push new values to Chart.js and shift window
+            throughputChart.data.datasets[0].data.shift();
+            throughputChart.data.datasets[0].data.push(currentThroughput);
+
+            throughputChart.data.datasets[1].data.shift();
+            throughputChart.data.datasets[1].data.push(Math.round(currentThroughput * (currentCacheRate / 100)));
+
+            throughputChart.update('none');
+
+            // 5. Update Latency Sparklines
+            updateSparklines();
+
+            // 6. Push standard event logs
+            const mockUsers = ['UX_9041', 'AD_8032', 'SEG_4240', 'CTR_3910', 'USR_2291', 'AD_7142'];
+            const mockShard = Math.floor(Math.random() * 64) + 1;
+            const chosenUser = mockUsers[Math.floor(Math.random() * mockUsers.length)];
+            const isHit = Math.random() < (currentCacheRate / 100);
+
+            if (isHit) {
+                writeToConsole(`User ${chosenUser} resolved via Cache Shard-${mockShard} -> ${P50_BASE}μs`, 'success');
+            } else {
+                writeToConsole(`User ${chosenUser} cache miss Shard-${mockShard}. Speculative scoring queued -> 112μs`, 'miss');
+            }
+
+        }, 1000);
+
+        // Security threat simulation loop
+        setInterval(() => {
+            const securityType = Math.random();
+
+            if (securityType < 0.4) {
+                // Trigger Volumetric ASGI Byte Limit Breach (HTTP 413)
+                firewallMitigated++;
+                document.getElementById('firewall-mitigated').textContent = firewallMitigated;
+
+                const firewallCard = document.getElementById('card-firewall');
+                firewallCard.classList.add('flash-crimson');
+                setTimeout(() => firewallCard.classList.remove('flash-crimson'), 2000);
+
+                writeToConsole(`HTTP 413 Payload Too Large - Inbound stream of 120,402 bytes rejected at ASGI boundary`, 'blocked-413');
+            } else if (securityType > 0.7) {
+                // Trigger Whitespace/Schema Violation (HTTP 422)
+                pydanticMitigated++;
+                document.getElementById('pydantic-mitigated').textContent = pydanticMitigated;
+
+                const pydanticCard = document.getElementById('card-pydantic');
+                pydanticCard.classList.add('flash-amber');
+                setTimeout(() => pydanticCard.classList.remove('flash-amber'), 2000);
+
+                writeToConsole(`HTTP 422 Unprocessable Entity - Invalid whitespace-only user_id from IP 192.168.1.104`, 'rejected-422');
+            }
+        }, 4500);
+
+        // Populate initial sparkline data points
+        for(let i=0; i<15; i++) {
+            updateSparklines();
+        }
+    </script>
+</body>
+</html>
