@@ -79,7 +79,7 @@ Ensure you have Python 3.10+ installed. Clone the repository and install the dep
 ```bash
 # Clone the repository
 git clone https://github.com/singhuday26/AeroStream.git
-cd 1day
+cd AeroStream
 
 # Install hyper-optimized runtime requirements
 pip install -r requirements.txt
