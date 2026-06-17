@@ -48,7 +48,11 @@ from fastapi.responses import JSONResponse
 
 from aerostream.cache import CacheManager
 from aerostream.config import settings
-from aerostream.middleware import CORSHeadersMiddleware, RequestTracingMiddleware
+from aerostream.middleware import (
+    BodySizeLimitMiddleware,
+    CORSHeadersMiddleware,
+    RequestTracingMiddleware,
+)
 from aerostream.routes import router
 from aerostream.worker import WorkerPool
 
@@ -56,7 +60,7 @@ from aerostream.worker import WorkerPool
 
 logging.basicConfig(
     level=logging.INFO,
-    format="%(asctime)s │ %(levelname)-7s │ %(name)-22s │ %(message)s",
+    format="%(asctime)s | %(levelname)-7s | %(name)-22s | %(message)s",
     datefmt="%H:%M:%S",
     stream=sys.stdout,
 )
@@ -75,9 +79,9 @@ async def lifespan(app: FastAPI):
     ensures resources are properly initialized before any requests
     are served and cleanly torn down on shutdown.
     """
-    logger.info("=" * 60)
-    logger.info("  AeroStream v%s — Starting Up", settings.app_version)
-    logger.info("=" * 60)
+    logger.info("-" * 60)
+    logger.info("  AeroStream v%s - Starting Up", settings.app_version)
+    logger.info("-" * 60)
 
     # ── Startup ──
     app.state.start_time = time.monotonic()
@@ -86,18 +90,18 @@ async def lifespan(app: FastAPI):
     cache_manager = CacheManager()
     await cache_manager.start_eviction_loop(interval=30.0)
     app.state.cache_manager = cache_manager
-    logger.info("✓ Cache layer online (%d shards)", settings.cache.num_shards)
+    logger.info("[OK] Cache layer online (%d shards)", settings.cache.num_shards)
 
     # Initialize and start the worker pool
     worker_pool = WorkerPool()
     worker_pool.set_cache(cache_manager)
     await worker_pool.start()
     app.state.worker_pool = worker_pool
-    logger.info("✓ Worker pool online (%d workers)", settings.worker.num_workers)
+    logger.info("[OK] Worker pool online (%d workers)", settings.worker.num_workers)
 
-    logger.info("✓ AeroStream ready — accepting connections on %s:%d",
+    logger.info("[OK] AeroStream ready - accepting connections on %s:%d",
                 settings.host, settings.port)
-    logger.info("=" * 60)
+    logger.info("-" * 60)
 
     yield  # ── Application runs here ──
 
@@ -125,8 +129,13 @@ app = FastAPI(
 )
 
 # ── Middleware Stack (order matters: last added = first executed) ──
+# Execution order at runtime: BodySizeLimit → CORS → RequestTracing → Route
+# BodySizeLimitMiddleware is a raw ASGI callable — registered via add_middleware
+# it becomes the OUTERMOST layer, intercepting raw bytes before Starlette
+# BaseHTTPMiddleware wrappers buffer anything into memory.
 app.add_middleware(RequestTracingMiddleware)
 app.add_middleware(CORSHeadersMiddleware)
+app.add_middleware(BodySizeLimitMiddleware)  # PATCH B-07: outermost ASGI firewall
 
 # ── Routes ──
 app.include_router(router)

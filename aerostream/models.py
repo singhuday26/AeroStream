@@ -13,6 +13,7 @@ from enum import Enum
 from typing import Any, Dict, List, Optional
 
 from pydantic import BaseModel, Field, field_validator
+import json as _json  # aliased to avoid shadowing any local 'json' usage
 
 
 # ─── Enums ────────────────────────────────────────────────────────────────────
@@ -66,6 +67,39 @@ class UserContext(BaseModel):
     geo: Optional[GeoLocation] = None
     segment_tags: List[str] = Field(default_factory=list, max_length=50)
 
+    # ── SECURITY PATCH C-02: Whitespace Validation Leak ──────────────────────
+    @field_validator("user_id", mode="before")
+    @classmethod
+    def user_id_must_not_be_blank(cls, v: object) -> object:
+        """
+        Strip leading/trailing/internal whitespace BEFORE Pydantic's
+        min_length=1 constraint fires.
+
+        Why mode='before'?
+            Pydantic's built-in min_length operates on the raw input value
+            after type coercion but BEFORE custom validators run in 'after'
+            mode. A string of pure whitespace (e.g. '   ') has len=3, so
+            min_length=1 passes silently — the whitespace-only string leaks
+            into the cache layer and pollutes downstream user profiles.
+            mode='before' fires FIRST, stripping the value before the
+            min_length constraint ever evaluates it.
+
+        Behavior:
+            '  hello  ' → 'hello'       (valid, stripped)
+            '   '       → ValueError    (blank after strip, rejected)
+            ''          → ValueError    (empty, caught by min_length after strip)
+            123         → passed through unchanged (non-str handled downstream)
+        """
+        if isinstance(v, str):
+            stripped = v.strip()
+            if len(stripped) == 0:
+                raise ValueError(
+                    "user_id must not be blank or whitespace-only. "
+                    "Provide a valid non-empty identifier."
+                )
+            return stripped
+        return v
+
 
 class StreamEvent(BaseModel):
     """
@@ -88,9 +122,29 @@ class StreamEvent(BaseModel):
     @field_validator("payload")
     @classmethod
     def payload_must_not_be_enormous(cls, v: Dict[str, Any]) -> Dict[str, Any]:
-        """Guard against accidental multi-MB payloads that would choke the pipeline."""
-        if len(str(v)) > 65_536:
-            raise ValueError("Payload exceeds 64KB serialized limit")
+        """
+        Guard against oversized payloads using ACTUAL wire-byte length.
+
+        SECURITY FIX (B-07):
+            Original implementation used len(str(v)) which measures Python
+            repr character count — NOT the UTF-8 byte count transmitted on
+            the wire. A 40K-character CJK string encodes to ~120KB in UTF-8
+            but str() measures ~80K characters, bypassing the 64KB guard.
+
+            Fix: serialize to JSON bytes first (json.dumps + .encode('utf-8')),
+            then measure len(bytes). This is the exact byte count Uvicorn
+            would receive from the network, making the guard byte-accurate.
+        """
+        try:
+            serialized_bytes = len(_json.dumps(v, allow_nan=True).encode("utf-8"))
+        except (TypeError, ValueError):
+            # Unserializable payload — still measure via repr as fallback
+            serialized_bytes = len(str(v).encode("utf-8"))
+        if serialized_bytes > 65_536:
+            raise ValueError(
+                f"Payload exceeds 64KB serialized limit "
+                f"({serialized_bytes:,} bytes > 65,536 byte limit)"
+            )
         return v
 
 
