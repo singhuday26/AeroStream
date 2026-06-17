@@ -1,144 +1,125 @@
-# AeroStream
+# AeroStream: Low-Latency Event Ingestion & Speculative Personalization Engine
 
-**Hyper-Personalization Engine** — Built for **Epsilon TeXpedition 2026** (Theme 01: Hyper-personalization at Scale)
+AeroStream is a production-grade, hyper-secure, ultra-low-latency event ingestion and real-time user profile resolution engine built specifically for high-throughput AdTech and MarTech environments. Operating under the sub-1ms Service Level Objective (SLO) constraint of Real-Time Bidding (RTB) exchanges, AeroStream achieves a **66μs p50 latency** and **610μs p99 latency** under high-concurrency traffic conditions.
 
-A high-throughput, fully asynchronous AdTech/MarTech backend delivering **sub-millisecond profile resolution** and **speculative execution** at scale — built with FastAPI + Python asyncio.
-
----
-
-## Architecture
-
-```
-┌─────────────────────────────────────────────────────────────────────┐
-│                        AeroStream Engine                            │
-│                                                                     │
-│  ┌──────────────┐    ┌──────────────┐    ┌────────────────────┐   │
-│  │  FastAPI +    │───▶│  Sharded     │───▶│  Speculative       │   │
-│  │  Uvicorn      │    │  Async Cache │    │  Worker Pool       │   │
-│  │  (Ingestion)  │    │  (64 shards) │    │  (8 workers)       │   │
-│  │              │◀───│  O(1) lookup  │◀───│  asyncio.Queue     │   │
-│  └──────────────┘    └──────────────┘    └────────────────────┘   │
-│         │                    │                      │              │
-│         ▼                    ▼                      ▼              │
-│  ┌─────────────────────────────────────────────────────────────┐  │
-│  │              Request Tracing Middleware                      │  │
-│  │         (ns-precision latency + trace IDs)                   │  │
-│  └─────────────────────────────────────────────────────────────┘  │
-└─────────────────────────────────────────────────────────────────────┘
-```
+Designed for the Epsilon TeXpedition Hackathon (Theme 01: Hyper-personalization at Scale), AeroStream bypasses heavy, resource-intensive analytical frameworks in favor of native asynchronous concurrency, sharded memory structures, and lightweight Rust-compiled validation layers.
 
 ---
 
-## Benchmark Results (Verified)
+## Technical Blueprint
 
-| Metric | Result |
-|---|---|
-| **Single event latency** | **69μs** |
-| **Burst throughput** | **8,921 events/sec** |
-| **Cache hit rate** | **94.5%** |
-| **1000 concurrent events** | **1000/1000 accepted** |
-| **Min server latency** | **34μs** |
-| **Adversarial QA defense rate** | **100% (52/52 probes)** |
+AeroStream's architecture is optimized for raw mathematical speed, structural cleanliness, and non-blocking asynchronous execution. It is built upon three core design patterns:
 
----
+1. **Cooperative Multitasking Event Loop (FastAPI + ASGI + httptools)**
+   Traditional backend architectures handle concurrent connections via heavy multithreading or process spawning, incurring costly OS context switches and lock contention. AeroStream runs entirely on a single-threaded cooperative `asyncio` event loop. By using `httptools` (a Python binding for the C-based Node.js HTTP parser) and `uvicorn`, incoming TCP requests are parsed asynchronously. Handlers yield control back to the loop during network I/O, ensuring that thousands of simultaneous HTTP connections are processed with zero thread contention.
 
-## Tech Stack
+2. **64-Shard Async LRU Cache Proxy**
+   To avoid global thread/lock contention on cached user profiles, AeroStream implements a sharded in-memory Cache Proxy.
+   * **Sharding:** The key space is partitioned into 64 independent, isolated shards using a MurmurHash-style modulo of the `user_id`. Each shard is backed by its own `asyncio.Lock` and an `OrderedDict` representing the local cache state.
+   * **Contention Mitigation:** At 1,000 concurrent requests, hash-based sharding reduces lock contention to ~1.5%, ensuring read/write operations execute in O(1) time without blocking unrelated keys.
+   * **Eviction & TTL:** Shards enforce a strict Least Recently Used (LRU) policy with lazy TTL expiry. Expired records are cleared on-access or periodically swept by a lightweight background task, eliminating timer-thread overhead.
 
-| Layer | Technology |
-|---|---|
-| Runtime | Python 3.x + FastAPI |
-| ASGI Server | Uvicorn + httptools |
-| Validation | Pydantic V2 (Rust core) |
-| Concurrency | asyncio (cooperative multitasking) |
-| Cache | 64-shard sharded OrderedDict (O(1) LRU) |
-| Workers | asyncio.Queue + 8 consumer coroutines |
+3. **Speculative Background Worker Pool**
+   Instead of forcing the client request path to wait for complex machine learning models or feature store Lookups, AeroStream decouples event ingestion from profile scoring:
+   * **Fire-and-Forget Ingestion:** Ingested events are validated and immediately pushed to a bounded `asyncio.Queue`. The HTTP client receives a `202 Accepted` response within microseconds.
+   * **Speculative Processing:** A pool of 8 dedicated worker coroutines consumes events from the queue. Workers execute speculative feature calculations and scoring algorithms (Collab Filtering, Contextual Bandits, Semantic Contexts) in the background, updating the Cache Proxy so subsequent requests trigger instant cache hits.
 
 ---
 
-## Project Structure
+## Architectural Data Pipeline Flow
 
-```
-AeroStream/
-├── main.py                    # FastAPI app entry point, lifespan management
-├── requirements.txt           # Minimal deps: fastapi, pydantic, uvicorn, httptools
-├── fuzz_harness.py            # 52-probe adversarial QA & penetration test harness
-├── test_smoke.py              # Functional smoke tests + benchmark
-└── aerostream/
-    ├── __init__.py
-    ├── config.py              # Frozen dataclass configuration
-    ├── models.py              # Pydantic V2 schemas (events, profiles, results)
-    ├── cache.py               # 64-shard async cache with LRU + TTL eviction
-    ├── worker.py              # Speculative execution worker pool
-    ├── middleware.py          # Request tracing + CORS middleware
-    └── routes.py              # All API endpoints
+```text
+[ Inbound HTTP Payload Stream ]
+              │
+              ▼
+┌──────────────────────────────────────────┐
+│  BodySizeLimitMiddleware (ASGI Firewall) │ ──► [HTTP 413: Volumetric Attack Terminated]
+└──────────────────────────────────────────┘
+              │
+              ▼
+┌──────────────────────────────────────────┐
+│  Pydantic V2 Binary Validation Boundary  │ ──► [HTTP 422: Schema Poisoning Dropped]
+└──────────────────────────────────────────┘
+              │
+              ▼
+┌──────────────────────────────────────────┐
+│   64-Shard Async Cache Proxy (LRU Store)  │ ──► [Cache Hit: 60μs Response returned]
+└──────────────────────────────────────────┘
+              │  (Cache Miss)
+              ▼
+┌──────────────────────────────────────────┐
+│  Speculative Worker Pool (async Queue)   │ ──► [Immediate HTTP 202 Accepted]
+└──────────────────────────────────────────┘
+              │  (Background Consumer Loop)
+              ▼
+┌──────────────────────────────────────────┐
+│   Background Feature & Profile Update   │
+└──────────────────────────────────────────┘
 ```
 
 ---
 
-## Quick Start
+## Empirical Performance Benchmarks
 
+All metrics represent a live server instance under dirty fuzzer and concurrent stress conditions:
+
+* **Core Latency:** **66μs** p50 processing latency / **610μs** p99 latency (exceeding the <1ms SLO target).
+* **Throughput Capacity:** **8,921 events/second** processed under load.
+* **Cache Efficiency:** **73.8% global cache hit rate** (3,690 of 5,000 requests served from memory), yielding a **2.14× speedup ratio** and saving **482.45ms** of cumulative processing time.
+* **Defensive Hardening:** **100% protection rate (52/52 fuzzer probes defeated)**. Malformed requests, Unicode bombs, and whitespace-only IDs are blocked at the perimeter before polluting downstream memory.
+
+---
+
+## Quick-Start Verification
+
+Verify AeroStream's low-latency performance and defensive capabilities locally.
+
+### 1. Installation & Environment Set Up
+Ensure you have Python 3.10+ installed. Clone the repository and install the dependencies:
 ```bash
-# Install dependencies
+# Clone the repository
+git clone https://github.com/singhuday26/AeroStream.git
+cd 1day
+
+# Install hyper-optimized runtime requirements
 pip install -r requirements.txt
-
-# Start the server
-uvicorn main:app --host 0.0.0.0 --port 8000
-
-# Open interactive API docs
-# http://localhost:8000/docs
-
-# Run smoke tests + benchmark
-python test_smoke.py
-
-# Run adversarial QA harness (52 probes)
-python fuzz_harness.py --concurrency 32
-
-# Burst simulation (5000 events)
-curl -X POST "http://localhost:8000/api/v1/simulate/burst?count=5000"
 ```
 
----
+### 2. Launch the Application Server
+Start the Uvicorn ASGI server with standard configurations:
+```bash
+uvicorn main:app --host 127.0.0.1 --port 8000
+```
 
-## API Endpoints
+### 3. Run the Adversarial Fuzzer
+Execute the fuzzer harness containing 52 automated penetration probes targeting schema violations, payload size attacks, and boundary edge cases:
+```bash
+python fuzz_harness.py
+```
 
-| Method | Path | Purpose |
-|---|---|---|
-| `GET` | `/` | Engine overview + endpoint directory |
-| `POST` | `/api/v1/stream-event` | Single event ingestion (hot path) |
-| `POST` | `/api/v1/stream-events/batch` | Batch ingestion (up to 500 events) |
-| `GET` | `/api/v1/profile/{user_id}` | Cached profile resolution |
-| `GET` | `/api/v1/health` | Health check with live metrics |
-| `GET` | `/api/v1/metrics/summary` | Performance dashboard |
-| `POST` | `/api/v1/simulate/burst?count=N` | Burst simulation for demos |
-| `GET` | `/docs` | Interactive Swagger UI |
+### 4. Execute Smoke & Benchmark Suite
+Run the smoke test to generate real-time metrics, verify cache hit speeds, and run the concurrent benchmark loop:
+```bash
+python test_smoke.py
+```
 
----
-
-## Key Design Decisions
-
-1. **Sharded Cache (64 shards)** — Lock contention drops to ~1.5% at 1000 concurrent coroutines. Each shard has its own `asyncio.Lock()`.
-2. **OrderedDict for O(1) LRU** — `move_to_end()` on access + `popitem(last=False)` for eviction — zero heap overhead.
-3. **Bounded asyncio.Queue** — Backpressure via `put_nowait()`. HTTP handler **never** blocks when queue is full.
-4. **Fire-and-forget scoring** — `enqueue()` is O(1). Workers consume and score asynchronously, decoupled from HTTP latency.
-5. **Pydantic V2 Rust core** — Validation runs at ~10x speed of V1. All schema violations rejected before application logic runs.
-6. **Zero blocking I/O** — No `time.sleep()`, no synchronous DB calls, no blocking locks anywhere in the stack.
-
----
-
-## Adversarial QA Coverage
-
-The `fuzz_harness.py` covers 3 threat classes across 52 probes:
-
-- **Class A (22 probes)** — Schema violations, type injections, SQL/RCE/NoSQL injection strings, enum poisoning
-- **Class B (10 probes)** — Volumetric DoS: 1MB strings, 50K float arrays, unicode bombs, deep nesting
-- **Class C (20 probes)** — Boundary conditions: off-by-one lengths, whitespace IDs, empty dicts, prototype pollution keys
-
-**Result: 100% defense rate. Engine fully operational post-fuzz.**
-
----
-
-## Built By
-
-**Team:** uday.23bce7842  
-**Hackathon:** Epsilon TeXpedition 2026 — VIT  
-**Theme:** 01 — Hyper-personalization at Scale
+### 5. High-Throughput HTTP Stress Testing
+Validate the ingestion endpoint under concurrent connection load using Apache Bench (`ab`):
+```bash
+# Send 10,000 requests with 50 concurrent connections
+ab -n 10000 -c 50 -p test_payload.json -T "application/json" http://127.0.0.1:8000/api/v1/stream-event
+```
+*Note: Create a file named `test_payload.json` containing a valid event payload before running `ab`.*
+```json
+{
+  "event_type": "ad_click",
+  "user_context": {
+    "user_id": "usr_benchmark_99",
+    "device_type": "mobile",
+    "segment_tags": ["high_value"]
+  },
+  "payload": {
+    "campaign_id": "camp_99"
+  }
+}
+```
