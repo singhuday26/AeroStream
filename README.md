@@ -104,7 +104,14 @@ python test_smoke.py
 ```
 
 ### 5. High-Throughput HTTP Stress Testing
-Validate the ingestion endpoint under concurrent connection load using Apache Bench (`ab`):
+Validate the ingestion endpoint under concurrent connection load using either the built-in Python stress-test script or Apache Bench (`ab`):
+
+#### Option A: Python Stress Test (Cross-Platform / No Installation Required)
+```bash
+python stress_test.py
+```
+
+#### Option B: Apache Bench (`ab`)
 ```bash
 # Send 10,000 requests with 50 concurrent connections
 ab -n 10000 -c 50 -p test_payload.json -T "application/json" http://127.0.0.1:8000/api/v1/stream-event
