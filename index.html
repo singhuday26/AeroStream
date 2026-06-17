@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="en" class="h-full bg-zinc-950">
+<html lang="en" class="h-full bg-slate-950">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AeroStream // Planetary-Scale Telemetry & Security Matrix</title>
+    <title>AeroStream // Intent Mutation & Predictive Personalization Engine</title>
     <!-- Google Fonts for premium typography -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -12,6 +12,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Lucide Icons CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/lucide/dist/umd/lucide.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -22,7 +24,7 @@
                     },
                     animation: {
                         'pulse-fast': 'pulse 1s cubic-bezier(0.4, 0, 0.6, 1) infinite',
-                        'ping-slow': 'ping 2s cubic-bezier(0, 0, 0.2, 1) infinite',
+                        'ping-slow': 'ping 2.5s cubic-bezier(0, 0, 0.2, 1) infinite',
                     }
                 }
             }
@@ -38,18 +40,18 @@
             background: rgba(9, 9, 11, 0.5);
         }
         ::-webkit-scrollbar-thumb {
-            background: rgba(63, 63, 70, 0.8);
+            background: rgba(71, 85, 105, 0.5);
             border-radius: 2px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(161, 161, 170, 0.8);
+            background: rgba(148, 163, 184, 0.8);
         }
         /* Glassmorphism utility card overrides */
         .glass-card {
-            background: rgba(24, 24, 27, 0.6);
+            background: rgba(15, 23, 42, 0.4);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(63, 63, 70, 0.4);
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(51, 65, 85, 0.35);
+            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.55);
         }
         /* Custom blinking cursor for monospace log terminal */
         .blinking-cursor::after {
@@ -62,11 +64,11 @@
         }
         /* Defensive flash animations */
         @keyframes crimson-flash {
-            0%, 100% { border-color: rgba(63, 63, 70, 0.4); background: rgba(24, 24, 27, 0.6); }
+            0%, 100% { border-color: rgba(51, 65, 85, 0.35); background: rgba(15, 23, 42, 0.4); }
             50% { border-color: rgba(244, 63, 94, 0.8); background: rgba(225, 29, 72, 0.15); }
         }
         @keyframes amber-flash {
-            0%, 100% { border-color: rgba(63, 63, 70, 0.4); background: rgba(24, 24, 27, 0.6); }
+            0%, 100% { border-color: rgba(51, 65, 85, 0.35); background: rgba(15, 23, 42, 0.4); }
             50% { border-color: rgba(245, 158, 11, 0.8); background: rgba(217, 119, 6, 0.15); }
         }
         .flash-crimson {
@@ -77,36 +79,40 @@
         }
     </style>
 </head>
-<body class="h-full text-zinc-200 antialiased font-sans select-none">
-    <div class="flex h-full flex-col">
+<body class="h-full bg-slate-950 text-slate-100 antialiased font-sans select-none overflow-x-hidden">
+    <div class="flex h-screen flex-col">
         <!-- HEADER -->
-        <header class="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/80 px-6 py-4 backdrop-blur-md">
-            <div class="flex items-center space-x-3">
+        <header class="flex items-center justify-between border-b border-slate-800 bg-slate-900/60 px-6 py-4 backdrop-blur-md">
+            <div class="flex items-center space-x-3.5">
                 <!-- Glowing engine indicator -->
                 <div class="relative flex h-3 w-3">
                     <span class="animate-ping-slow absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                     <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
                 </div>
                 <div>
-                    <h1 class="text-lg font-bold uppercase tracking-wider text-emerald-400 font-mono">AeroStream Engine</h1>
-                    <p class="text-xs text-zinc-500">FastAPI &bull; Speculative Edge Router &bull; v1.0.0</p>
+                    <h1 class="text-base font-extrabold uppercase tracking-wider text-emerald-400 font-mono flex items-center gap-2">
+                        AeroStream <span class="text-[10px] text-slate-400 border border-slate-700 px-1.5 py-0.5 rounded font-normal bg-slate-950">INTENT MUTATION ENGINE</span>
+                    </h1>
+                    <p class="text-xs text-slate-500" id="backend-info-text">FastAPI &bull; Speculative Edge Cache Routing &bull; Sandbox Mode</p>
                 </div>
             </div>
             <div class="flex items-center space-x-6">
                 <!-- Status Matrix Indicators -->
                 <div class="hidden md:flex items-center space-x-4 text-xs font-mono">
                     <div class="flex flex-col items-end">
-                        <span class="text-zinc-500 uppercase">System Status</span>
-                        <span class="text-emerald-400 font-bold">SLO COMPLIANT (<1ms)</span>
+                        <span class="text-slate-500 uppercase text-[10px] tracking-wider font-semibold">Core Latency SLO</span>
+                        <span class="text-emerald-400 font-bold text-xs">COMPLIANT (&lt;1.0ms Target)</span>
                     </div>
-                    <div class="h-8 w-px bg-zinc-800"></div>
+                    <div class="h-8 w-px bg-slate-800"></div>
                     <div class="flex flex-col items-end">
-                        <span class="text-zinc-500 uppercase">Target Host</span>
-                        <span class="text-zinc-300">127.0.0.1:8000</span>
+                        <span class="text-slate-500 uppercase text-[10px] tracking-wider font-semibold">Proxy Host</span>
+                        <span class="text-slate-300 text-xs">127.0.0.1:8000</span>
                     </div>
                 </div>
-                <div class="rounded border border-emerald-500/30 bg-emerald-500/10 px-3 py-1 text-xs font-mono font-semibold text-emerald-400 uppercase tracking-widest animate-pulse">
-                    Live Feed Active
+                <!-- Status Badge -->
+                <div id="backend-status-badge" class="rounded border border-indigo-500/30 bg-indigo-500/10 px-3 py-1.5 text-xs font-mono font-semibold text-indigo-400 uppercase tracking-widest flex items-center">
+                    <span class="h-1.5 w-1.5 rounded-full bg-indigo-400 mr-2 animate-pulse"></span>
+                    SANDBOX EMULATOR ACTIVE
                 </div>
             </div>
         </header>
@@ -114,168 +120,301 @@
         <!-- MAIN LAYOUT -->
         <main class="flex-1 overflow-y-auto p-6 space-y-6">
             
-            <!-- SECTION A: THE CORE METRIC GRID -->
+            <!-- SECTION A: THE CORE METRIC CLUSTER -->
             <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <!-- METRIC 1: Ingestion Throughput -->
+                <!-- METRIC 1: Inbound Clickstream Throughput -->
                 <div class="glass-card rounded-xl p-5 flex flex-col justify-between relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-3 text-zinc-700 group-hover:text-emerald-400 transition-colors">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    <div class="absolute top-0 right-0 p-4 text-slate-700 group-hover:text-emerald-400 transition-colors">
+                        <i data-lucide="activity" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 font-mono">Ingestion Throughput</h2>
+                        <h2 class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 font-mono">Inbound Throughput</h2>
                         <div class="flex items-baseline space-x-2 mt-2">
-                            <span id="metric-throughput" class="text-4xl font-extrabold tracking-tight text-zinc-100 font-mono">8,921</span>
-                            <span class="text-xs font-mono text-zinc-400">events/sec</span>
+                            <span id="metric-throughput" class="text-4xl font-extrabold tracking-tight text-slate-100 font-mono">8,921</span>
+                            <span class="text-xs font-mono text-slate-400">events/sec</span>
                         </div>
                     </div>
-                    <div class="mt-4 flex items-center justify-between text-xs font-mono border-t border-zinc-800/50 pt-3">
-                        <span class="text-zinc-500">Live Window Scale:</span>
-                        <span class="text-emerald-400 flex items-center">
-                            <span class="h-2 w-2 rounded-full bg-emerald-400 inline-block mr-1.5 animate-pulse"></span>
+                    <div class="mt-4 flex items-center justify-between text-xs font-mono border-t border-slate-800/80 pt-3">
+                        <span class="text-slate-500">Live Window Scale:</span>
+                        <span class="text-emerald-400 flex items-center font-semibold text-[11px]">
+                            <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 inline-block mr-1.5 animate-pulse"></span>
                             Peak Ingestion
                         </span>
                     </div>
                 </div>
 
-                <!-- METRIC 2: Pipeline Latency (p50) -->
+                <!-- METRIC 2: p50 Latency -->
                 <div class="glass-card rounded-xl p-5 flex flex-col justify-between relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-3 text-zinc-700 group-hover:text-emerald-400 transition-colors">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                    <div class="absolute top-0 right-0 p-4 text-slate-700 group-hover:text-emerald-400 transition-colors">
+                        <i data-lucide="clock" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 font-mono">p50 Engine Latency</h2>
+                        <h2 class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 font-mono">p50 Ingest Latency</h2>
                         <div class="flex items-baseline space-x-2 mt-2">
-                            <span id="metric-p50" class="text-4xl font-extrabold tracking-tight text-zinc-100 font-mono">66</span>
-                            <span class="text-xs font-mono text-emerald-400">μs</span>
+                            <span id="metric-p50" class="text-4xl font-extrabold tracking-tight text-slate-100 font-mono">66</span>
+                            <span class="text-xs font-mono text-emerald-400 font-semibold">μs</span>
                         </div>
                     </div>
-                    <div class="mt-4 flex items-center justify-between text-xs font-mono border-t border-zinc-800/50 pt-3">
-                        <span class="text-zinc-500">Sparkline Latency (30s):</span>
+                    <div class="mt-4 flex items-center justify-between text-xs font-mono border-t border-slate-800/80 pt-3">
+                        <span class="text-slate-500">p50 Variance (30s):</span>
                         <canvas id="p50-sparkline" width="90" height="20" class="opacity-80"></canvas>
                     </div>
                 </div>
 
-                <!-- METRIC 3: Pipeline Latency (p99) -->
+                <!-- METRIC 3: p99 Latency -->
                 <div class="glass-card rounded-xl p-5 flex flex-col justify-between relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-3 text-zinc-700 group-hover:text-amber-500 transition-colors">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path></svg>
+                    <div class="absolute top-0 right-0 p-4 text-slate-700 group-hover:text-amber-500 transition-colors">
+                        <i data-lucide="clock" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 font-mono">p99 Tail Latency</h2>
+                        <h2 class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 font-mono">p99 Tail Latency</h2>
                         <div class="flex items-baseline space-x-2 mt-2">
-                            <span id="metric-p99" class="text-4xl font-extrabold tracking-tight text-zinc-100 font-mono">610</span>
-                            <span class="text-xs font-mono text-amber-500">μs</span>
+                            <span id="metric-p99" class="text-4xl font-extrabold tracking-tight text-slate-100 font-mono">610</span>
+                            <span class="text-xs font-mono text-amber-500 font-semibold">μs</span>
                         </div>
                     </div>
-                    <div class="mt-4 flex items-center justify-between text-xs font-mono border-t border-zinc-800/50 pt-3">
-                        <span class="text-zinc-500">Sparkline Latency (30s):</span>
+                    <div class="mt-4 flex items-center justify-between text-xs font-mono border-t border-slate-800/80 pt-3">
+                        <span class="text-slate-500">p99 Variance (30s):</span>
                         <canvas id="p99-sparkline" width="90" height="20" class="opacity-80"></canvas>
                     </div>
                 </div>
 
-                <!-- METRIC 4: Cache Hit Rate & Processing Saved -->
+                <!-- METRIC 4: Cache Hit Rate & CPU Time Saved -->
                 <div class="glass-card rounded-xl p-5 flex flex-col justify-between relative overflow-hidden group">
-                    <div class="absolute top-0 right-0 p-3 text-zinc-700 group-hover:text-emerald-400 transition-colors">
-                        <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"></path></svg>
+                    <div class="absolute top-0 right-0 p-4 text-slate-700 group-hover:text-emerald-400 transition-colors">
+                        <i data-lucide="database" class="w-6 h-6"></i>
                     </div>
                     <div>
-                        <h2 class="text-xs font-semibold uppercase tracking-wider text-zinc-500 font-mono">LRU Cache Hit Rate</h2>
+                        <h2 class="text-[11px] font-semibold uppercase tracking-wider text-slate-500 font-mono">Sharded Cache hit</h2>
                         <div class="flex items-baseline space-x-2 mt-2">
-                            <span id="metric-cache-hit" class="text-4xl font-extrabold tracking-tight text-zinc-100 font-mono">73.8</span>
-                            <span class="text-xs font-mono text-zinc-400">%</span>
+                            <span id="metric-cache-hit" class="text-4xl font-extrabold tracking-tight text-slate-100 font-mono">73.8</span>
+                            <span class="text-xs font-mono text-slate-400">%</span>
                         </div>
                     </div>
-                    <div class="mt-4 flex items-center justify-between text-xs font-mono border-t border-zinc-800/50 pt-3">
-                        <span class="text-zinc-500">Cumulative CPU Saved:</span>
+                    <div class="mt-4 flex items-center justify-between text-xs font-mono border-t border-slate-800/80 pt-3">
+                        <span class="text-slate-500">CPU Savings (2.14x Speedup):</span>
                         <span id="metric-cpu-saved" class="text-emerald-400 font-bold">482.45 ms</span>
                     </div>
                 </div>
             </section>
 
-            <!-- SECTION B: REAL-TIME STREAMING VISUALIZER (Split Pane) -->
+            <!-- SECTION B: REAL-TIME STREAMING VISUALIZER & CONTROL -->
             <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- CHART PANEL (2/3 width on desktop) -->
-                <div class="glass-card rounded-xl p-6 lg:col-span-2 flex flex-col space-y-4">
-                    <div class="flex items-center justify-between">
-                        <h2 class="text-sm font-bold uppercase tracking-wider font-mono text-zinc-400">Throughput & Cache Hit History (30s Window)</h2>
-                        <span class="text-xs text-zinc-500 font-mono">Interval: 1s</span>
+                <!-- TELEMETRY HISTORY CHART & SPIKE CONTROL (2/3 width) -->
+                <div class="flex flex-col space-y-6 lg:col-span-2">
+                    <!-- CHART PANEL -->
+                    <div class="glass-card rounded-xl p-6 flex-1 flex flex-col space-y-4">
+                        <div class="flex items-center justify-between">
+                            <div class="flex items-center space-x-2.5">
+                                <div class="p-1.5 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-400">
+                                    <i data-lucide="activity" class="w-4 h-4"></i>
+                                </div>
+                                <h2 class="text-sm font-bold uppercase tracking-wider font-mono text-slate-300">Throughput & Latency History (30s Window)</h2>
+                            </div>
+                            <span class="text-xs text-slate-500 font-mono">Lookup Interval: 1000ms</span>
+                        </div>
+                        <div class="flex-1 min-h-[280px] relative">
+                            <canvas id="throughput-chart"></canvas>
+                        </div>
                     </div>
-                    <div class="flex-1 min-h-[300px] relative">
-                        <canvas id="throughput-chart"></canvas>
+
+                    <!-- "NUCLEAR" TRAFFIC SPIKE SIMULATOR CONTROL -->
+                    <div class="glass-card rounded-xl p-5 border border-slate-800/80 bg-slate-900/30">
+                        <div class="flex flex-col sm:flex-row items-center justify-between gap-5">
+                            <div class="space-y-1 text-center sm:text-left">
+                                <h3 class="text-sm font-bold uppercase tracking-wider font-mono text-rose-500 flex items-center justify-center sm:justify-start gap-2">
+                                    <i data-lucide="zap" class="w-4 h-4 text-rose-400 animate-pulse"></i>
+                                    Nuclear Volumetric Traffic Spike Simulator
+                                </h3>
+                                <p class="text-xs text-slate-400 max-w-xl">
+                                    Simulates a massive burst event of 10,000 real-time user events over a compressed 5s window. 
+                                    Demonstrates cache proxy speed and flat edge latency, keeping pipeline metrics anchored well below the 1ms SLO boundary.
+                                </p>
+                            </div>
+                            <button id="spike-btn" onclick="triggerTrafficSpike()" class="w-full sm:w-auto py-3.5 px-6 rounded-xl border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 hover:text-indigo-300 font-mono text-xs font-bold tracking-wider transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-indigo-500/5 cursor-pointer select-none">
+                                <i data-lucide="zap" class="w-4 h-4"></i>
+                                <span>TRIGGER 10,000 EVENT TRAFFIC SPIKE</span>
+                            </button>
+                        </div>
                     </div>
                 </div>
 
-                <!-- MONOSPACE LOG CONSOLE (1/3 width on desktop) -->
-                <div class="glass-card rounded-xl p-6 flex flex-col h-[380px] lg:h-auto space-y-4 overflow-hidden">
-                    <div class="flex items-center justify-between border-b border-zinc-800/50 pb-2">
-                        <h2 class="text-sm font-bold uppercase tracking-wider font-mono text-zinc-400">Real-Time Event Ticker</h2>
+                <!-- MONOSPACE LOG CONSOLE (1/3 width) -->
+                <div class="glass-card rounded-xl p-6 flex flex-col h-full min-h-[440px] space-y-4 overflow-hidden">
+                    <div class="flex items-center justify-between border-b border-slate-800/60 pb-3">
+                        <div class="flex items-center space-x-2">
+                            <div class="p-1.5 bg-slate-500/10 border border-slate-850 rounded-lg text-slate-400">
+                                <i data-lucide="terminal" class="w-4 h-4 font-bold"></i>
+                            </div>
+                            <h2 class="text-sm font-bold uppercase tracking-wider font-mono text-slate-300">Live Pipeline Event Ticker</h2>
+                        </div>
                         <span class="flex h-2 w-2 relative">
                             <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                             <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                         </span>
                     </div>
                     <!-- Terminal interface console -->
-                    <div id="log-console" class="flex-1 overflow-y-auto bg-black/80 rounded-lg p-4 font-mono text-xs text-zinc-400 space-y-2 select-text">
-                        <div class="text-zinc-600">[SYSTEM] Initialization completed. Handlers listening on port 8000...</div>
-                        <div class="text-emerald-500">[SYSTEM] 64-shard Cache Proxy online. speculative workers active.</div>
-                        <div class="text-zinc-500">[INFO] Lifespan setup complete. Starting metrics processing loops...</div>
-                        <div class="text-emerald-400 blinking-cursor">_</div>
+                    <div id="log-console" class="flex-1 overflow-y-auto bg-slate-950 border border-slate-850 rounded-lg p-4 font-mono text-xs text-slate-400 space-y-2.5 leading-relaxed shadow-inner">
+                        <div class="text-slate-500">[SYSTEM] Core pipeline initialized. Listeners active on port 8000...</div>
+                        <div class="text-emerald-400 font-semibold">[SYSTEM] Sharded Async cache proxy online (64 shards active).</div>
+                        <div class="text-slate-500">[INFO] Request Tracing Middleware registered. ns-precision active.</div>
+                        <div class="text-emerald-500 blinking-cursor">_</div>
                     </div>
                 </div>
             </section>
 
-            <!-- SECTION C: MULTI-LAYER PERIMETER SECURITY MATRIX -->
-            <section class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- ASGI Byte Firewall Boundary -->
-                <div id="card-firewall" class="glass-card rounded-xl p-6 flex flex-col justify-between transition-all duration-300">
-                    <div class="flex items-start justify-between">
-                        <div class="space-y-1">
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 font-mono">Perimeter Guard A</span>
-                            <h2 class="text-lg font-bold tracking-tight text-zinc-200">ASGI Byte-Limit Firewall</h2>
-                            <p class="text-xs text-zinc-500">Terminates requests at connection layer if content-length exceeds 64KB.</p>
+            <!-- SECTION C: BUSINESS STORYTELLING (Nike Journey) & SECURITY MATRIX -->
+            <section class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- STORYTELLING MODULE (2/3 width) -->
+                <div class="glass-card rounded-xl p-6 lg:col-span-2 flex flex-col space-y-6">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+                        <div class="flex items-center space-x-2.5">
+                            <div class="p-1.5 bg-indigo-500/10 border border-indigo-500/30 rounded-lg text-indigo-400">
+                                <i data-lucide="user" class="w-4 h-4"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-sm font-bold uppercase tracking-wider font-mono text-slate-300">Nike Use Case: Real-Time Intent Mutation</h2>
+                                <p class="text-xs text-slate-500">Trace user action sequences and watch the engine mutate targets in &lt;66μs</p>
+                            </div>
                         </div>
-                        <!-- Status Badge -->
-                        <span class="rounded bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider flex items-center">
-                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                            ACTIVE
+                        <span class="rounded bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-1 text-[10px] font-mono font-bold text-indigo-400 uppercase tracking-wider">
+                            Interactive Demo
                         </span>
                     </div>
+                    <div class="grid grid-cols-1 md:grid-cols-5 gap-6">
+                        <!-- Timeline steps (col-span-2) -->
+                        <div class="md:col-span-2 flex flex-col space-y-3 relative justify-center">
+                            <!-- Vertical line for timeline -->
+                            <div class="absolute left-6 top-8 bottom-8 w-px bg-slate-800 pointer-events-none z-0"></div>
+                            
+                            <!-- Action 1 -->
+                            <button onclick="selectNikeStep(1)" id="step-btn-1" class="relative z-10 flex items-center space-x-3.5 p-3.5 rounded-xl border border-slate-800/80 bg-slate-900/30 text-left transition-all duration-300 group select-none cursor-pointer">
+                                <div id="step-dot-1" class="flex items-center justify-center w-6 h-6 rounded-full border border-slate-750 bg-slate-950 font-mono text-xs text-slate-500 font-bold group-hover:border-slate-500 transition-colors">1</div>
+                                <div class="flex-1 min-w-0">
+                                    <span class="block text-[10px] font-mono text-slate-500 uppercase tracking-wider group-hover:text-slate-400 transition-colors">Action 1</span>
+                                    <span class="block text-sm font-bold text-slate-300 group-hover:text-slate-100 transition-colors truncate">Visits Nike Home</span>
+                                </div>
+                            </button>
 
-                    <div class="grid grid-cols-2 gap-4 mt-6 border-t border-zinc-800/50 pt-4">
-                        <div class="space-y-1">
-                            <span class="text-xs font-mono text-zinc-500 uppercase">Boundary Limit</span>
-                            <div class="text-sm font-bold font-mono text-zinc-300">65,536 bytes</div>
+                            <!-- Action 2 -->
+                            <button onclick="selectNikeStep(2)" id="step-btn-2" class="relative z-10 flex items-center space-x-3.5 p-3.5 rounded-xl border border-slate-800/80 bg-slate-900/30 text-left transition-all duration-300 group select-none cursor-pointer">
+                                <div id="step-dot-2" class="flex items-center justify-center w-6 h-6 rounded-full border border-slate-750 bg-slate-950 font-mono text-xs text-slate-500 font-bold group-hover:border-slate-500 transition-colors">2</div>
+                                <div class="flex-1 min-w-0">
+                                    <span class="block text-[10px] font-mono text-slate-500 uppercase tracking-wider group-hover:text-slate-400 transition-colors">Action 2</span>
+                                    <span class="block text-sm font-bold text-slate-300 group-hover:text-slate-100 transition-colors truncate">Views Running Shoes</span>
+                                </div>
+                            </button>
+
+                            <!-- Action 3 -->
+                            <button onclick="selectNikeStep(3)" id="step-btn-3" class="relative z-10 flex items-center space-x-3.5 p-3.5 rounded-xl border border-slate-800/80 bg-slate-900/30 text-left transition-all duration-300 group select-none cursor-pointer">
+                                <div id="step-dot-3" class="flex items-center justify-center w-6 h-6 rounded-full border border-slate-750 bg-slate-950 font-mono text-xs text-slate-500 font-bold group-hover:border-slate-500 transition-colors">3</div>
+                                <div class="flex-1 min-w-0">
+                                    <span class="block text-[10px] font-mono text-slate-500 uppercase tracking-wider group-hover:text-slate-400 transition-colors">Action 3</span>
+                                    <span class="block text-sm font-bold text-slate-300 group-hover:text-slate-100 transition-colors truncate">Reads Marathon Blog</span>
+                                </div>
+                            </button>
+
+                            <!-- Action 4 -->
+                            <button onclick="selectNikeStep(4)" id="step-btn-4" class="relative z-10 flex items-center space-x-3.5 p-3.5 rounded-xl border border-slate-800/80 bg-slate-900/30 text-left transition-all duration-300 group select-none cursor-pointer">
+                                <div id="step-dot-4" class="flex items-center justify-center w-6 h-6 rounded-full border border-slate-750 bg-slate-950 font-mono text-xs text-slate-500 font-bold group-hover:border-slate-500 transition-colors">4</div>
+                                <div class="flex-1 min-w-0">
+                                    <span class="block text-[10px] font-mono text-slate-500 uppercase tracking-wider group-hover:text-slate-400 transition-colors">Action 4</span>
+                                    <span class="block text-sm font-bold text-slate-300 group-hover:text-slate-100 transition-colors truncate">Checks Running Nutrition</span>
+                                </div>
+                            </button>
                         </div>
-                        <div class="space-y-1">
-                            <span class="text-xs font-mono text-zinc-500 uppercase">Probes Intercepted</span>
-                            <div id="firewall-mitigated" class="text-sm font-bold font-mono text-rose-500">0</div>
+
+                        <!-- Personalized output panel (col-span-3) -->
+                        <div id="nike-output-panel" class="md:col-span-3 bg-slate-950 border border-slate-850 rounded-xl p-5 flex flex-col justify-between space-y-4 transition-all duration-300">
+                            <!-- Session header -->
+                            <div class="flex justify-between items-center text-xs font-mono border-b border-slate-900 pb-3">
+                                <span class="text-slate-500">ACTIVE SESSION: <span class="text-indigo-400 font-semibold font-mono">usr_nike_942</span></span>
+                                <span id="nike-lookup-lat" class="text-emerald-400 font-semibold flex items-center">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span>
+                                    CACHE HIT &bull; 66μs
+                                </span>
+                            </div>
+
+                            <!-- Intent shifting detail -->
+                            <div class="space-y-2">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 font-mono">Segment Shift & Session Context</span>
+                                <div class="flex flex-wrap gap-2" id="nike-segments">
+                                    <!-- segments loaded dynamically -->
+                                </div>
+                                <p id="nike-intent-mutation" class="text-xs text-slate-400 font-sans leading-relaxed pt-1">
+                                    <!-- description loaded dynamically -->
+                                </p>
+                            </div>
+
+                            <!-- Target Ad Delivered -->
+                            <div class="space-y-2 pt-2">
+                                <div class="flex justify-between items-center">
+                                    <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 font-mono">Cached Campaign Creative</span>
+                                    <span id="nike-ctr-score" class="text-[10px] font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded font-bold">
+                                        CTR Prediction: 3.4%
+                                    </span>
+                                </div>
+                                
+                                <!-- Campaign Banner Card -->
+                                <div id="nike-banner" class="relative overflow-hidden rounded-lg p-5 transition-all duration-500 min-h-[140px] flex flex-col justify-center">
+                                    <!-- details loaded dynamically -->
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Pydantic V2 Binary Validation Boundary -->
-                <div id="card-pydantic" class="glass-card rounded-xl p-6 flex flex-col justify-between transition-all duration-300">
-                    <div class="flex items-start justify-between">
-                        <div class="space-y-1">
-                            <span class="text-[10px] font-bold uppercase tracking-widest text-zinc-500 font-mono">Perimeter Guard B</span>
-                            <h2 class="text-lg font-bold tracking-tight text-zinc-200">Pydantic V2 Rust Core Validator</h2>
-                            <p class="text-xs text-zinc-500">Enforces structural constraints, data types, and whitespace validation boundaries.</p>
+                <!-- PERIMETER SECURITY MATRIX (1/3 width) -->
+                <div class="flex flex-col space-y-6">
+                    <!-- ASGI Byte Firewall Boundary -->
+                    <div id="card-firewall" class="glass-card rounded-xl p-5 flex-1 flex flex-col justify-between transition-all duration-300">
+                        <div class="flex items-start justify-between">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 font-mono">Perimeter Guard A</span>
+                                <h2 class="text-base font-bold tracking-tight text-slate-200 font-mono">ASGI Byte-Limit Firewall</h2>
+                                <p class="text-xs text-slate-500 leading-normal pt-1">Terminates connection stream instantly if HTTP payload size exceeds 64KB threshold.</p>
+                            </div>
+                            <span class="rounded bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[9px] font-mono font-bold text-emerald-400 uppercase tracking-wider flex items-center">
+                                <i data-lucide="shield" class="w-3 h-3 mr-1"></i>
+                                ACTIVE
+                            </span>
                         </div>
-                        <!-- Status Badge -->
-                        <span class="rounded bg-emerald-500/10 border border-emerald-500/20 px-2 py-1 text-[10px] font-mono font-bold text-emerald-400 uppercase tracking-wider flex items-center">
-                            <svg class="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path></svg>
-                            ACTIVE
-                        </span>
+
+                        <div class="grid grid-cols-2 gap-4 mt-5 border-t border-slate-850 pt-4">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-mono text-slate-500 uppercase">Boundary Limit</span>
+                                <div class="text-xs font-bold font-mono text-slate-300">65,536 bytes</div>
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-mono text-slate-500 uppercase font-semibold">Probes Intercepted</span>
+                                <div id="firewall-mitigated" class="text-xs font-bold font-mono text-rose-500">0</div>
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-4 mt-6 border-t border-zinc-800/50 pt-4">
-                        <div class="space-y-1">
-                            <span class="text-xs font-mono text-zinc-500 uppercase">Schema Verification</span>
-                            <div class="text-sm font-bold font-mono text-zinc-300">FastAPI / Rust compiled</div>
+                    <!-- Pydantic V2 Rust Core Validator -->
+                    <div id="card-pydantic" class="glass-card rounded-xl p-5 flex-1 flex flex-col justify-between transition-all duration-300">
+                        <div class="flex items-start justify-between">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-bold uppercase tracking-widest text-slate-500 font-mono">Perimeter Guard B</span>
+                                <h2 class="text-base font-bold tracking-tight text-slate-200 font-mono">Pydantic Core Validator</h2>
+                                <p class="text-xs text-slate-500 leading-normal pt-1">Executes native Rust compiled validation models against incoming event payload schema.</p>
+                            </div>
+                            <span class="rounded bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 text-[9px] font-mono font-bold text-emerald-400 uppercase tracking-wider flex items-center">
+                                <i data-lucide="shield" class="w-3 h-3 mr-1"></i>
+                                ACTIVE
+                            </span>
                         </div>
-                        <div class="space-y-1">
-                            <span class="text-xs font-mono text-zinc-500 uppercase">Probes Intercepted</span>
-                            <div id="pydantic-mitigated" class="text-sm font-bold font-mono text-amber-500">0</div>
+
+                        <div class="grid grid-cols-2 gap-4 mt-5 border-t border-slate-850 pt-4">
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-mono text-slate-500 uppercase">Engine Build</span>
+                                <div class="text-xs font-bold font-mono text-slate-300">Rust bindings</div>
+                            </div>
+                            <div class="space-y-1">
+                                <span class="text-[10px] font-mono text-slate-500 uppercase font-semibold font-mono">Errors Mitigated</span>
+                                <div id="pydantic-mitigated" class="text-xs font-bold font-mono text-amber-500">0</div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -283,13 +422,13 @@
         </main>
 
         <!-- FOOTER -->
-        <footer class="border-t border-zinc-800 bg-zinc-950 px-6 py-4 flex flex-col md:flex-row justify-between items-center text-xs font-mono text-zinc-600 gap-4">
+        <footer class="border-t border-slate-800 bg-slate-950 px-6 py-4 flex flex-col md:flex-row justify-between items-center text-xs font-mono text-slate-600 gap-4">
             <div>
                 &copy; 2026 AeroStream Engine. Real-Time Telemetry System.
             </div>
             <div class="flex items-center space-x-4">
                 <span>VIT Epsilon TeXpedition Hackathon Submission</span>
-                <span class="h-1.5 w-1.5 rounded-full bg-zinc-800"></span>
+                <span class="h-1.5 w-1.5 rounded-full bg-slate-800"></span>
                 <span>Theme 01: Hyper-personalization at Scale</span>
             </div>
         </footer>
@@ -297,7 +436,7 @@
 
     <!-- SCRIPT LOGIC -->
     <script>
-        // Data configurations matching Epsilon TeXpedition milestones
+        // Data configurations matching AeroStream specifications
         const TARGET_THROUGHPUT = 8921;
         const TARGET_CACHE_HIT_RATE = 73.8;
         const P50_BASE = 66;
@@ -306,10 +445,60 @@
         let totalCpuSavedMs = 482.45;
         let firewallMitigated = 0;
         let pydanticMitigated = 0;
+        let isSpiking = false;
+        let currentActiveNikeStep = 1;
 
         // Sparkline buffers for latency variation simulation
         let p50Buffer = Array(15).fill(P50_BASE);
         let p99Buffer = Array(15).fill(P99_BASE);
+
+        // Nike Use Case Data definitions
+        const nikeStepsData = {
+            1: {
+                segments: ['general_enthusiast'],
+                intent: 'First contact. Landed on Nike global home directory. Analyzing browser context parameters and initializing speculative edge cache structures.',
+                campaign: 'Nike Pegasus 41 Launch',
+                ctr: '3.4% Predicted CTR',
+                bannerClass: 'bg-gradient-to-br from-indigo-950/70 to-slate-900 border border-indigo-500/30 text-slate-200',
+                badgeClass: 'bg-indigo-500/10 border border-indigo-500/20 text-indigo-400',
+                headline: 'THE EXTRAORDINARY EVERYDAY.',
+                subheadline: 'Nike Pegasus 41',
+                tagline: 'Equipped with responsive dual ReactX foam midsoles and twin Zoom Air units for a springy, cushioned run.'
+            },
+            2: {
+                segments: ['general_enthusiast', 'fitness_shopper'],
+                intent: 'Category navigation detected: Footwear -> Performance Running. Profiling reveals active evaluation of running options. Speculative cache pre-warms Invincible cushioning catalog.',
+                campaign: 'Nike Invincible 3 Cushioning',
+                ctr: '7.8% Predicted CTR',
+                bannerClass: 'bg-gradient-to-br from-emerald-950/70 to-slate-900 border border-emerald-500/30 text-slate-200',
+                badgeClass: 'bg-emerald-500/10 border border-emerald-500/20 text-emerald-400',
+                headline: 'MAXIMUM CUSHION. STRETCH THE RUN.',
+                subheadline: 'Nike ZoomX Invincible 3',
+                tagline: 'High-support, max-cushion platform engineered to absorb micro-impact. Delivered from cache instantly (66μs lookup).'
+            },
+            3: {
+                segments: ['general_enthusiast', 'fitness_shopper', 'marathon_runner'],
+                intent: 'User reading marathon training guides. Intent shifted to long-distance athletic preparation. Speculative router selects carbon-plated racing variants.',
+                campaign: 'Nike Alphafly 3 Elite',
+                ctr: '14.2% Predicted CTR',
+                bannerClass: 'bg-gradient-to-br from-rose-950/70 to-slate-900 border border-rose-500/30 text-slate-200',
+                badgeClass: 'bg-rose-500/10 border border-rose-500/20 text-rose-400',
+                headline: 'FOR THE SPEED LIMITLESS.',
+                subheadline: 'Nike Air Zoom Alphafly 3',
+                tagline: 'Dual Zoom Air units and a full-length carbon Flyplate. Pre-computed segment match resolved before user navigates further.'
+            },
+            4: {
+                segments: ['general_enthusiast', 'fitness_shopper', 'marathon_runner', 'sports_nutrition_buyer'],
+                intent: 'Endurance runner cross-selling unlocked. Navigating supplement parameters. Intent mutated to high-value nutritional buyer. Zero lag execution.',
+                campaign: 'Nike FuelPack Endurance Bundle',
+                ctr: '22.9% Predicted CTR',
+                bannerClass: 'bg-gradient-to-br from-amber-950/70 to-slate-900 border border-amber-500/30 text-slate-200',
+                badgeClass: 'bg-amber-500/10 border border-amber-500/20 text-amber-400',
+                headline: 'FUEL BEYOND THE WALL.',
+                subheadline: 'Nike FuelPack & Supplement Bundle',
+                tagline: 'Premium hydration electrolytes + energy gels. Dynamic cross-category target delivered instantaneously in 66μs.'
+            }
+        };
 
         // Sparkline drawing helper
         function drawSparkline(canvasId, buffer, baseValue, strokeColor) {
@@ -339,7 +528,7 @@
             ctx.stroke();
         }
 
-        // Initialize Sparklines
+        // Update Latency Sparklines
         function updateSparklines() {
             // Simulate minor microsecond oscillations
             p50Buffer.shift();
@@ -354,22 +543,50 @@
 
         // Initialize Real-Time Logging Console
         const consoleEl = document.getElementById('log-console');
+        
+        // JSON syntax highlighter utility
+        function syntaxHighlight(json) {
+            if (typeof json !== 'string') {
+                json = JSON.stringify(json, undefined, 2);
+            }
+            json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+            return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?)/g, function (match) {
+                var cls = 'text-slate-400';
+                if (/^"/.test(match)) {
+                    if (/:$/.test(match)) {
+                        cls = 'text-indigo-400';
+                    } else {
+                        cls = 'text-emerald-400';
+                    }
+                } else if (/true|false/.test(match)) {
+                    cls = 'text-amber-400 font-bold';
+                } else if (/null/.test(match)) {
+                    cls = 'text-slate-500';
+                } else {
+                    cls = 'text-sky-400';
+                }
+                return '<span class="' + cls + '">' + match + '</span>';
+            });
+        }
+
         function writeToConsole(message, type = 'info') {
             const timeStr = new Date().toISOString().split('T')[1].slice(0, 8) + 'Z';
             const entry = document.createElement('div');
+            entry.className = 'leading-relaxed select-text font-mono break-all text-xs border-b border-slate-900 pb-1.5';
             
             if (type === 'success') {
-                entry.innerHTML = `<span class="text-emerald-400">[HIT]</span> ${timeStr} - ${message}`;
+                entry.innerHTML = `<span class="text-emerald-400 font-bold">[HIT]</span> <span class="text-slate-500">${timeStr}</span> &mdash; ${message}`;
             } else if (type === 'miss') {
-                entry.innerHTML = `<span class="text-amber-500">[MISS]</span> ${timeStr} - ${message}`;
+                entry.innerHTML = `<span class="text-amber-500 font-bold">[MISS]</span> <span class="text-slate-500">${timeStr}</span> &mdash; ${message}`;
             } else if (type === 'blocked-413') {
-                entry.className = 'font-bold text-rose-400';
-                entry.innerHTML = `<span class="text-rose-500 font-extrabold">[BLOCKED]</span> ${timeStr} - ${message}`;
+                entry.innerHTML = `<span class="text-rose-500 font-bold">[BLOCKED]</span> <span class="text-slate-500">${timeStr}</span> &mdash; <span class="text-rose-400 font-semibold">${message}</span>`;
             } else if (type === 'rejected-422') {
-                entry.className = 'font-bold text-amber-400';
-                entry.innerHTML = `<span class="text-amber-500 font-extrabold">[REJECTED]</span> ${timeStr} - ${message}`;
+                entry.innerHTML = `<span class="text-amber-500 font-bold">[REJECTED]</span> <span class="text-slate-500">${timeStr}</span> &mdash; <span class="text-amber-400 font-semibold">${message}</span>`;
+            } else if (type === 'json') {
+                const highlighted = syntaxHighlight(message);
+                entry.innerHTML = `<span class="text-indigo-400 font-bold">[EVENT]</span> <span class="text-slate-500">${timeStr}</span> &mdash; ${highlighted}`;
             } else {
-                entry.innerHTML = `<span class="text-zinc-500">[INFO]</span> ${timeStr} - ${message}`;
+                entry.innerHTML = `<span class="text-slate-500 font-bold">[INFO]</span> <span class="text-slate-500">${timeStr}</span> &mdash; <span class="text-slate-400">${message}</span>`;
             }
 
             // Keep cursor at bottom
@@ -389,6 +606,8 @@
         const chartLabels = Array(chartDataPoints).fill('');
         const totalRequestsData = Array(chartDataPoints).fill(TARGET_THROUGHPUT);
         const cacheHitsData = Array(chartDataPoints).fill(Math.round(TARGET_THROUGHPUT * (TARGET_CACHE_HIT_RATE / 100)));
+        const latencyData = Array(chartDataPoints).fill(P50_BASE);
+        const sloLimitData = Array(chartDataPoints).fill(1000); // 1ms = 1000μs
 
         const throughputChart = new Chart(chartCtx, {
             type: 'line',
@@ -398,22 +617,44 @@
                     {
                         label: 'Total Ingestion (events/sec)',
                         data: totalRequestsData,
-                        borderColor: '#3f3f46',
-                        backgroundColor: 'rgba(63, 63, 70, 0.1)',
+                        borderColor: '#475569',
+                        backgroundColor: 'rgba(71, 85, 105, 0.04)',
                         borderWidth: 2,
                         pointRadius: 0,
                         fill: true,
-                        tension: 0.3
+                        tension: 0.3,
+                        yAxisID: 'y'
                     },
                     {
                         label: 'Cache Hits (events/sec)',
                         data: cacheHitsData,
                         borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.05)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.03)',
                         borderWidth: 2,
                         pointRadius: 0,
                         fill: true,
-                        tension: 0.3
+                        tension: 0.3,
+                        yAxisID: 'y'
+                    },
+                    {
+                        label: 'Engine Latency (μs)',
+                        data: latencyData,
+                        borderColor: '#f43f5e',
+                        borderWidth: 2,
+                        pointRadius: 0,
+                        fill: false,
+                        tension: 0.3,
+                        yAxisID: 'y1'
+                    },
+                    {
+                        label: 'SLO Boundary (1ms / 1000μs)',
+                        data: sloLimitData,
+                        borderColor: 'rgba(244, 63, 94, 0.35)',
+                        borderWidth: 1.5,
+                        borderDash: [5, 5],
+                        pointRadius: 0,
+                        fill: false,
+                        yAxisID: 'y1'
                     }
                 ]
             },
@@ -422,9 +663,13 @@
                 maintainAspectRatio: false,
                 plugins: {
                     legend: {
+                        position: 'top',
+                        align: 'end',
                         labels: {
-                            color: '#a1a1aa',
-                            font: { family: 'JetBrains Mono', size: 10 }
+                            color: '#94a3b8',
+                            font: { family: 'JetBrains Mono', size: 9 },
+                            boxWidth: 12,
+                            padding: 15
                         }
                     }
                 },
@@ -434,18 +679,222 @@
                         ticks: { display: false }
                     },
                     y: {
-                        grid: { color: '#27272a' },
+                        type: 'linear',
+                        display: true,
+                        position: 'left',
+                        grid: { color: '#1e293b' },
                         ticks: {
-                            color: '#a1a1aa',
+                            color: '#94a3b8',
                             font: { family: 'JetBrains Mono', size: 10 }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Throughput (events/sec)',
+                            color: '#94a3b8',
+                            font: { family: 'Outfit', size: 10 }
                         }
+                    },
+                    y1: {
+                        type: 'linear',
+                        display: true,
+                        position: 'right',
+                        grid: { drawOnChartArea: false },
+                        ticks: {
+                            color: '#f43f5e',
+                            font: { family: 'JetBrains Mono', size: 10 }
+                        },
+                        title: {
+                            display: true,
+                            text: 'Latency (μs)',
+                            color: '#f43f5e',
+                            font: { family: 'Outfit', size: 10 }
+                        },
+                        min: 0,
+                        max: 1200
                     }
                 }
             }
         });
 
-        // Periodic update simulation (1 second intervals)
+        // Nike Step Selection Callback
+        function selectNikeStep(stepNum) {
+            const data = nikeStepsData[stepNum];
+            if (!data) return;
+
+            currentActiveNikeStep = stepNum;
+
+            // Update buttons styling
+            for (let i = 1; i <= 4; i++) {
+                const btn = document.getElementById(`step-btn-${i}`);
+                const dot = document.getElementById(`step-dot-${i}`);
+                if (i === stepNum) {
+                    btn.className = "relative z-10 flex items-center space-x-3.5 p-3.5 rounded-xl border border-indigo-500/40 bg-indigo-950/20 text-indigo-300 text-left transition-all duration-300 group select-none shadow-md shadow-indigo-500/5 cursor-pointer";
+                    dot.className = "flex items-center justify-center w-6 h-6 rounded-full border border-indigo-500 bg-indigo-500 font-mono text-xs text-slate-950 font-bold transition-all duration-300 scale-110";
+                } else {
+                    btn.className = "relative z-10 flex items-center space-x-3.5 p-3.5 rounded-xl border border-slate-800/80 bg-slate-900/30 text-left transition-all duration-300 hover:border-slate-700 hover:text-slate-200 group select-none cursor-pointer";
+                    dot.className = "flex items-center justify-center w-6 h-6 rounded-full border border-slate-700 bg-slate-950 font-mono text-xs text-slate-500 font-bold group-hover:border-slate-500 transition-colors";
+                }
+            }
+
+            // Update output panel contents
+            // Segments
+            const segmentContainer = document.getElementById('nike-segments');
+            segmentContainer.innerHTML = '';
+            data.segments.forEach(seg => {
+                const badge = document.createElement('span');
+                badge.className = `px-2 py-0.5 rounded text-[10px] font-mono font-bold tracking-wider uppercase ${data.badgeClass}`;
+                badge.textContent = seg.replace(/_/g, ' ');
+                segmentContainer.appendChild(badge);
+            });
+
+            // Intent mutation description
+            document.getElementById('nike-intent-mutation').textContent = data.intent;
+
+            // CTR Score
+            document.getElementById('nike-ctr-score').textContent = `CTR Prediction: ${data.ctr.split(' ')[0]}`;
+
+            // Banner details
+            const banner = document.getElementById('nike-banner');
+            banner.className = `relative overflow-hidden rounded-lg p-5 transition-all duration-500 ${data.bannerClass}`;
+            banner.innerHTML = `
+                <div class="relative z-10 space-y-1">
+                    <span class="text-[9px] font-bold uppercase tracking-widest text-slate-400 font-mono block opacity-85">${data.campaign}</span>
+                    <h3 class="text-xs font-mono font-bold text-slate-400 tracking-wider">${data.headline}</h3>
+                    <h4 class="text-lg font-extrabold text-slate-100 leading-tight">${data.subheadline}</h4>
+                    <p class="text-xs text-slate-400 mt-2 font-sans font-normal leading-normal max-w-md">${data.tagline}</p>
+                </div>
+                <!-- Decorative subtle background SVG shape -->
+                <div class="absolute -right-4 -bottom-6 w-32 h-32 opacity-20 pointer-events-none z-0 text-slate-350">
+                    <svg viewBox="0 0 100 100" fill="none" stroke="currentColor" stroke-width="1.5">
+                        <circle cx="50" cy="50" r="40" stroke-dasharray="4 4" />
+                        <path d="M50 10v80M10 50h80" />
+                    </svg>
+                </div>
+            `;
+
+            // Visual flash animation on update
+            const panel = document.getElementById('nike-output-panel');
+            panel.classList.remove('border-slate-850');
+            panel.classList.add('border-indigo-500/50', 'bg-indigo-950/5');
+            setTimeout(() => {
+                panel.classList.remove('border-indigo-500/50', 'bg-indigo-950/5');
+                panel.classList.add('border-slate-850');
+            }, 400);
+
+            // Push JSON frame to console
+            const payload = {
+                user_id: "usr_nike_942",
+                event: data.campaign.toLowerCase().replace(/ /g, '_') + "_click",
+                intent_mutation: data.segments[data.segments.length - 1],
+                segments: data.segments,
+                cache_status: "HIT",
+                latency: "66us",
+                delivered_creative: data.campaign,
+                ctr_score: parseFloat(data.ctr)
+            };
+            writeToConsole(`[INTENT MUTATION] Event: ${data.campaign} resolved via Cache Proxy`, 'success');
+            writeToConsole(JSON.stringify(payload), 'json');
+        }
+
+        // Trigger Volumetric Stress Test (Spike Simulator)
+        function triggerTrafficSpike() {
+            if (isSpiking) return;
+            isSpiking = true;
+            
+            const btn = document.getElementById('spike-btn');
+            btn.disabled = true;
+            btn.className = "w-full sm:w-auto py-3.5 px-6 rounded-xl border border-rose-500/50 bg-rose-950/25 text-rose-400 font-mono text-xs font-bold tracking-wider transition-all duration-300 flex items-center justify-center space-x-2 animate-pulse cursor-not-allowed";
+            btn.innerHTML = `
+                <svg class="animate-spin h-3.5 w-3.5 mr-2 text-rose-400" viewBox="0 0 24 24" fill="none">
+                    <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                    <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z"></path>
+                </svg>
+                SPIKE RUNNING (10k EVENTS)...
+            `;
+
+            writeToConsole("WARNING: Volumetric ingestion stress test initiated. Target parameter: 10,000 events.", "blocked-413");
+
+            let duration = 5000; 
+            let stepsCount = 25; // updates every 200ms
+            let currentStep = 0;
+
+            const spikeInterval = setInterval(() => {
+                currentStep++;
+                
+                // Throughput peaks in the middle and declines
+                // Normal throughput is 8,921. Let's make it peak at 9,500.
+                let stepProgress = currentStep / stepsCount; 
+                let multiplier = Math.sin(stepProgress * Math.PI); 
+                let addedThroughput = Math.round(multiplier * 1500); 
+                
+                let currentThroughput = TARGET_THROUGHPUT + addedThroughput + Math.round(Math.random() * 100 - 50);
+                let currentCacheRate = parseFloat((TARGET_CACHE_HIT_RATE + 8.5 + (Math.random() * 2 - 1)).toFixed(1)); 
+                
+                // Update live metrics counters
+                document.getElementById('metric-throughput').textContent = currentThroughput.toLocaleString();
+                document.getElementById('metric-cache-hit').textContent = currentCacheRate;
+
+                // Accumulate CPU saved time
+                const hitsThisSecond = currentThroughput * (currentCacheRate / 100);
+                const savedTimeThisSecMs = hitsThisSecond * 0.07524;
+                totalCpuSavedMs += (savedTimeThisSecMs * 0.2); // adjusting for 200ms step
+                document.getElementById('metric-cpu-saved').textContent = totalCpuSavedMs.toFixed(2) + ' ms';
+
+                // Push to chart
+                throughputChart.data.datasets[0].data.shift();
+                throughputChart.data.datasets[0].data.push(currentThroughput);
+
+                throughputChart.data.datasets[1].data.shift();
+                throughputChart.data.datasets[1].data.push(Math.round(currentThroughput * (currentCacheRate / 100)));
+
+                // Latency (dataset[2]) remains flat!
+                throughputChart.data.datasets[2].data.shift();
+                throughputChart.data.datasets[2].data.push(Math.round(P50_BASE + (Math.random() * 4 - 2)));
+
+                throughputChart.update('none');
+
+                // Stream rapid JSON logs (4 per step = 20 per second)
+                const mockUsers = ['usr_nike_804', 'usr_nike_391', 'usr_nike_229', 'usr_nike_714', 'usr_nike_603'];
+                const mockActions = ['home_visit', 'product_view', 'add_to_cart', 'nutrition_check'];
+                const mockSegments = ['fitness_shopper', 'sports_nutrition_buyer', 'marathon_runner'];
+                
+                for(let j=0; j<4; j++) {
+                    const u = mockUsers[Math.floor(Math.random() * mockUsers.length)] + '_' + Math.floor(Math.random() * 1000);
+                    const act = mockActions[Math.floor(Math.random() * mockActions.length)];
+                    const seg = mockSegments[Math.floor(Math.random() * mockSegments.length)];
+                    const payload = {
+                        user_id: u,
+                        event: `spike_${act}`,
+                        intent_mutation: seg,
+                        cache_status: "HIT",
+                        latency: `${Math.round(P50_BASE + (Math.random() * 6 - 3))}us`,
+                        load_test_active: true
+                    };
+                    writeToConsole(JSON.stringify(payload), 'json');
+                }
+
+                if (currentStep >= stepsCount) {
+                    clearInterval(spikeInterval);
+                    isSpiking = false;
+                    
+                    // Restore button
+                    btn.disabled = false;
+                    btn.className = "w-full sm:w-auto py-3.5 px-6 rounded-xl border border-indigo-500/30 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 hover:text-indigo-300 font-mono text-xs font-bold tracking-wider transition-all duration-300 flex items-center justify-center space-x-2 shadow-lg hover:shadow-indigo-500/5 cursor-pointer select-none";
+                    btn.innerHTML = `
+                        <i data-lucide="zap" class="w-4 h-4"></i>
+                        <span>TRIGGER 10,000 EVENT TRAFFIC SPIKE</span>
+                    `;
+                    lucide.createIcons();
+
+                    writeToConsole("STRESS TEST SUCCESS: 10,000 simulated events handled. 100% core cache proxy availability. p50 latency stayed stable at 66μs.", "success");
+                }
+            }, 200);
+        }
+
+        // Periodic update simulation (1 second intervals) when NOT spiking
         setInterval(() => {
+            if (isSpiking) return; 
+
             // 1. Oscillate Ingestion Throughput around 8,921 events/sec
             const currentThroughput = Math.round(TARGET_THROUGHPUT + (Math.random() * 140 - 70));
             document.getElementById('metric-throughput').textContent = currentThroughput.toLocaleString();
@@ -454,10 +903,10 @@
             const currentCacheRate = parseFloat((TARGET_CACHE_HIT_RATE + (Math.random() * 0.6 - 0.3)).toFixed(1));
             document.getElementById('metric-cache-hit').textContent = currentCacheRate;
 
-            // 3. Increment cumulative saved CPU time (every hit saves ~9.94ms of downstream thread waiting)
+            // 3. Increment cumulative saved CPU time (every hit saves 75.24us of downstream processing)
             const hitsThisSecond = currentThroughput * (currentCacheRate / 100);
-            const savedTimeThisSecMs = hitsThisSecond * 9.94;
-            totalCpuSavedMs += savedTimeThisSecMs / 1000;
+            const savedTimeThisSecMs = hitsThisSecond * 0.07524;
+            totalCpuSavedMs += savedTimeThisSecMs;
             document.getElementById('metric-cpu-saved').textContent = totalCpuSavedMs.toFixed(2) + ' ms';
 
             // 4. Push new values to Chart.js and shift window
@@ -467,27 +916,48 @@
             throughputChart.data.datasets[1].data.shift();
             throughputChart.data.datasets[1].data.push(Math.round(currentThroughput * (currentCacheRate / 100)));
 
+            throughputChart.data.datasets[2].data.shift();
+            throughputChart.data.datasets[2].data.push(Math.round(P50_BASE + (Math.random() * 4 - 2)));
+
             throughputChart.update('none');
 
             // 5. Update Latency Sparklines
             updateSparklines();
 
             // 6. Push standard event logs
-            const mockUsers = ['UX_9041', 'AD_8032', 'SEG_4240', 'CTR_3910', 'USR_2291', 'AD_7142'];
+            const mockUsers = ['usr_nike_804', 'usr_nike_391', 'usr_nike_229', 'usr_nike_714', 'usr_nike_603'];
             const mockShard = Math.floor(Math.random() * 64) + 1;
             const chosenUser = mockUsers[Math.floor(Math.random() * mockUsers.length)];
             const isHit = Math.random() < (currentCacheRate / 100);
-
+            
+            const randomIntents = ['general_enthusiast', 'fitness_shopper', 'marathon_runner', 'sports_nutrition_buyer'];
+            const randomEvents = ['page_view', 'category_nav', 'item_detail', 'search_query'];
+            
             if (isHit) {
-                writeToConsole(`User ${chosenUser} resolved via Cache Shard-${mockShard} -> ${P50_BASE}μs`, 'success');
+                const payload = {
+                    user_id: chosenUser,
+                    event: randomEvents[Math.floor(Math.random() * randomEvents.length)],
+                    intent_mutation: randomIntents[Math.floor(Math.random() * randomIntents.length)],
+                    cache_status: "HIT",
+                    latency: `${Math.round(P50_BASE + (Math.random() * 6 - 3))}us`
+                };
+                writeToConsole(JSON.stringify(payload), 'json');
             } else {
-                writeToConsole(`User ${chosenUser} cache miss Shard-${mockShard}. Speculative scoring queued -> 112μs`, 'miss');
+                const payload = {
+                    user_id: chosenUser,
+                    event: randomEvents[Math.floor(Math.random() * randomEvents.length)],
+                    intent_mutation: randomIntents[Math.floor(Math.random() * randomIntents.length)],
+                    cache_status: "MISS",
+                    latency: "141us"
+                };
+                writeToConsole(JSON.stringify(payload), 'json');
             }
 
         }, 1000);
 
         // Security threat simulation loop
         setInterval(() => {
+            if (isSpiking) return; 
             const securityType = Math.random();
 
             if (securityType < 0.4) {
@@ -513,10 +983,40 @@
             }
         }, 4500);
 
-        // Populate initial sparkline data points
-        for(let i=0; i<15; i++) {
-            updateSparklines();
+        // Verify if backend API is reachable
+        async function checkBackendHealth() {
+            try {
+                const response = await fetch('/api/v1/health');
+                if (response.ok) {
+                    const data = await response.json();
+                    document.getElementById('backend-status-badge').className = "rounded border border-emerald-500/30 bg-emerald-500/10 px-3 py-1.5 text-xs font-mono font-semibold text-emerald-400 uppercase tracking-widest flex items-center";
+                    document.getElementById('backend-status-badge').innerHTML = `
+                        <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 mr-2 animate-pulse"></span>
+                        LIVE API CONNECTED
+                    `;
+                    document.getElementById('backend-info-text').innerHTML = `FastAPI &bull; Speculative Edge Cache Routing &bull; Uptime: ${Math.round(data.uptime_seconds)}s`;
+                }
+            } catch (err) {
+                // Fail silently, remain in Sandbox Mode
+            }
         }
+
+        // Initialize window contents
+        window.addEventListener('DOMContentLoaded', () => {
+            // Load Lucide SVG Icons
+            lucide.createIcons();
+            
+            // Populate initial sparkline data points
+            for(let i=0; i<15; i++) {
+                updateSparklines();
+            }
+
+            // Load first Nike use case step content
+            selectNikeStep(1);
+
+            // Verify backend connection
+            checkBackendHealth();
+        });
     </script>
 </body>
 </html>

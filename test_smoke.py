@@ -18,9 +18,16 @@ async def main():
         print("=" * 60)
         print("1. ROOT ENDPOINT")
         r = await client.get("/")
-        data = r.json()
-        print(f"   Engine: {data['engine']} v{data['version']}")
         print(f"   Status: {r.status_code}")
+        print(f"   Content-Type: {r.headers.get('content-type', 'N/A')}")
+        if "html" in r.headers.get("content-type", ""):
+            print("   Root serves HTML Dashboard successfully.")
+        else:
+            try:
+                data = r.json()
+                print(f"   Engine: {data['engine']} v{data['version']}")
+            except Exception:
+                print("   Could not parse response as JSON.")
         print()
 
         # 2. Single event ingestion
