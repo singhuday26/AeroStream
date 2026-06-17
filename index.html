@@ -78,15 +78,19 @@
 <body class="h-full bg-slate-950 text-slate-100 antialiased font-sans select-none overflow-x-hidden">
     <div class="flex h-screen flex-col">
         <!-- HEADER -->
-        <header class="flex items-center justify-between border-b border-slate-900 bg-slate-950 px-8 py-5">
-            <div class="flex items-center space-x-4">
-                <div class="relative flex h-2.5 w-2.5">
+        <header class="flex items-center justify-between border-b border-slate-900 bg-slate-950 px-8 py-6">
+            <div class="flex items-center space-x-5">
+                <!-- Glowing engine indicator -->
+                <div class="relative flex h-3.5 w-3.5">
                     <span class="animate-ping-slow absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                    <span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
+                    <span class="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500"></span>
                 </div>
                 <div>
-                    <h1 class="text-sm font-extrabold uppercase tracking-widest text-emerald-400 font-mono">AeroStream Engine</h1>
-                    <p class="text-xs text-slate-500 font-mono" id="backend-info-text">Real-Time Intent Mutation Dashboard &bull; Sandbox Mode</p>
+                    <!-- Bold Display Gradient Title -->
+                    <h1 class="text-2xl md:text-3xl font-extrabold tracking-tight select-none">
+                        <span class="bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">AERO</span><span class="bg-gradient-to-r from-emerald-400 to-teal-500 bg-clip-text text-transparent">STREAM</span>
+                    </h1>
+                    <p class="text-xs text-slate-400 font-medium tracking-wide mt-0.5" id="backend-info-text">Real-Time Predictive Intent Mutation & Revenue Optimization Engine</p>
                 </div>
             </div>
             <div class="flex items-center space-x-6 text-xs font-mono">
@@ -112,7 +116,8 @@
         <main class="flex-1 overflow-y-auto p-8 grid grid-cols-1 lg:grid-cols-2 gap-8">
             
             <!-- COLUMN 1: THE VISUAL PRODUCT STORY (Nike Session Simulator) -->
-            <section class="flex flex-col space-y-6">
+            <!-- Wrapped in a dynamic glowing container with scale on hover -->
+            <section id="left-panel" class="flex flex-col space-y-6 transition-all duration-500 ease-out hover:scale-[1.01] rounded-3xl p-1 border border-slate-900 shadow-2xl">
                 <!-- Stepper Container -->
                 <div class="glass-card rounded-2xl p-6 flex flex-col space-y-6">
                     <div class="space-y-1">
@@ -130,25 +135,25 @@
 
                         <!-- Step 1 -->
                         <button onclick="selectNikeStep(1)" class="relative z-10 flex flex-col items-center group focus:outline-none cursor-pointer">
-                            <div id="step-node-1" class="w-10 h-10 rounded-full bg-slate-900 border-2 border-slate-700 text-slate-400 flex items-center justify-center font-mono text-xs font-bold transition-all duration-300 group-hover:border-slate-500">1</div>
+                            <div id="step-node-1" class="w-10 h-10 rounded-full bg-slate-900 border-2 border-slate-700 text-slate-450 flex items-center justify-center font-mono text-xs font-bold transition-all duration-300 group-hover:border-slate-500">1</div>
                             <span id="step-label-1" class="text-xs font-bold uppercase tracking-wider font-mono text-slate-500 mt-2 transition-colors">Home Visit</span>
                         </button>
 
                         <!-- Step 2 -->
                         <button onclick="selectNikeStep(2)" class="relative z-10 flex flex-col items-center group focus:outline-none cursor-pointer">
-                            <div id="step-node-2" class="w-10 h-10 rounded-full bg-slate-900 border-2 border-slate-700 text-slate-400 flex items-center justify-center font-mono text-xs font-bold transition-all duration-300 group-hover:border-slate-500">2</div>
+                            <div id="step-node-2" class="w-10 h-10 rounded-full bg-slate-900 border-2 border-slate-700 text-slate-455 flex items-center justify-center font-mono text-xs font-bold transition-all duration-300 group-hover:border-slate-500">2</div>
                             <span id="step-label-2" class="text-xs font-bold uppercase tracking-wider font-mono text-slate-500 mt-2 transition-colors">Browse</span>
                         </button>
 
                         <!-- Step 3 -->
                         <button onclick="selectNikeStep(3)" class="relative z-10 flex flex-col items-center group focus:outline-none cursor-pointer">
-                            <div id="step-node-3" class="w-10 h-10 rounded-full bg-slate-900 border-2 border-slate-700 text-slate-400 flex items-center justify-center font-mono text-xs font-bold transition-all duration-300 group-hover:border-slate-500">3</div>
+                            <div id="step-node-3" class="w-10 h-10 rounded-full bg-slate-900 border-2 border-slate-700 text-slate-455 flex items-center justify-center font-mono text-xs font-bold transition-all duration-300 group-hover:border-slate-500">3</div>
                             <span id="step-label-3" class="text-xs font-bold uppercase tracking-wider font-mono text-slate-500 mt-2 transition-colors">Blog Read</span>
                         </button>
 
                         <!-- Step 4 -->
                         <button onclick="selectNikeStep(4)" class="relative z-10 flex flex-col items-center group focus:outline-none cursor-pointer">
-                            <div id="step-node-4" class="w-10 h-10 rounded-full bg-slate-900 border-2 border-slate-700 text-slate-400 flex items-center justify-center font-mono text-xs font-bold transition-all duration-300 group-hover:border-slate-500">4</div>
+                            <div id="step-node-4" class="w-10 h-10 rounded-full bg-slate-900 border-2 border-slate-700 text-slate-455 flex items-center justify-center font-mono text-xs font-bold transition-all duration-300 group-hover:border-slate-500">4</div>
                             <span id="step-label-4" class="text-xs font-bold uppercase tracking-wider font-mono text-slate-500 mt-2 transition-colors">Cart Update</span>
                         </button>
                     </div>
@@ -159,39 +164,55 @@
                     <!-- Session Stats and Verification Badge -->
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-slate-900 pb-4">
                         <div class="text-sm font-mono">
-                            <span class="text-slate-500">ACTIVE SESSION: </span>
+                            <span class="text-slate-550 uppercase">Active Session: </span>
                             <span class="text-indigo-400 font-bold">usr_nike_942</span>
                         </div>
-                        <div class="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1 text-xs font-mono font-bold text-emerald-400 flex items-center shadow-lg shadow-emerald-950/10">
+                        <div class="rounded-full bg-emerald-500/10 border border-emerald-500/20 px-3.5 py-1.5 text-xs font-mono font-bold text-emerald-400 flex items-center shadow-lg shadow-emerald-950/10">
                             <i data-lucide="zap" class="w-4 h-4 mr-1.5 text-emerald-400 animate-pulse"></i>
                             Resolved via 64-Shard Cache Proxy in 66μs [O(1) Hit]
                         </div>
                     </div>
 
                     <!-- Intent Shift Details -->
-                    <div class="space-y-3">
-                        <span class="text-xs font-bold uppercase tracking-widest text-slate-500 font-mono">Inferred Session Intent</span>
-                        <div id="nike-segments" class="flex flex-wrap gap-2">
+                    <div class="space-y-3.5">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-400 font-mono">Inferred Session Intent</span>
+                            <span class="text-[10px] text-slate-500 font-mono">LIVE UPDATE</span>
+                        </div>
+                        <div id="nike-segments" class="flex flex-wrap gap-2.5">
                             <!-- loaded dynamically -->
                         </div>
-                        <!-- Enhanced readability wrap for non-tech judges -->
-                        <p id="nike-intent-mutation" class="text-sm text-slate-300 leading-relaxed font-normal bg-slate-900/30 p-4 rounded-xl border border-slate-800/40">
-                            <!-- loaded dynamically -->
-                        </p>
+                        <!-- High-Contrast readibility layout for non-tech judges -->
+                        <div class="bg-slate-900/80 border border-slate-800/80 p-5 rounded-2xl shadow-inner shadow-black/20">
+                            <p id="nike-intent-mutation" class="text-base text-slate-100 leading-relaxed font-medium">
+                                <!-- loaded dynamically -->
+                            </p>
+                        </div>
                     </div>
 
                     <!-- Target Ad Creative Card -->
-                    <div class="space-y-3 pt-3">
-                        <div class="flex justify-between items-center text-xs font-mono">
-                            <span class="text-slate-500 uppercase tracking-wider text-[10px] font-semibold">Target Campaign Creative</span>
-                            <span id="nike-ctr-score" class="text-emerald-400 font-bold bg-emerald-500/10 border border-emerald-500/25 px-2.5 py-0.5 rounded text-xs">
+                    <div class="space-y-4 pt-4 relative">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-400 font-mono">Speculative Ad Engine Target</span>
+                            <span id="nike-ctr-score" class="text-xs font-bold font-mono text-emerald-400 bg-emerald-500/10 border border-emerald-500/25 px-3 py-1 rounded-full shadow-sm">
                                 CTR: 0.0%
                             </span>
                         </div>
                         
-                        <!-- Rich HTML/CSS Product Banner Card -->
-                        <div id="nike-banner" class="relative overflow-hidden rounded-xl p-6 min-h-[160px] flex flex-col justify-center transition-all duration-500">
-                            <!-- loaded dynamically -->
+                        <!-- Rich HTML/CSS Product Banner Card with clean glassmorphic style -->
+                        <div class="relative rounded-2xl border border-slate-800/80 bg-slate-900/80 p-6 min-h-[200px] flex flex-col justify-between transition-all duration-500 shadow-2xl shadow-black/30" id="nike-banner-container">
+                            <!-- Floating Delivered tag in upper right -->
+                            <div class="absolute top-4 right-4 z-20">
+                                <span class="rounded-full bg-emerald-500/15 border border-emerald-400/35 px-3.5 py-1 text-[10px] font-mono font-bold text-emerald-400 tracking-wider flex items-center shadow-lg shadow-emerald-950/20 animate-pulse-slow">
+                                    <span class="h-1.5 w-1.5 rounded-full bg-emerald-400 mr-2"></span>
+                                    ⚡ DELIVERED IN 66μs
+                                </span>
+                            </div>
+                            
+                            <!-- Banner internal container -->
+                            <div id="nike-banner" class="w-full h-full flex flex-col justify-center relative z-10 transition-all duration-505">
+                                <!-- loaded dynamically -->
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -204,41 +225,41 @@
                     <!-- Vit 1: Throughput -->
                     <div class="glass-card rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden group">
                         <div class="space-y-1">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 font-mono">Throughput</span>
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-400 font-mono">Throughput</span>
                             <div class="flex items-baseline space-x-1.5">
                                 <span id="metric-throughput" class="text-4xl font-extrabold tracking-tight text-slate-100 font-mono">8,921</span>
                                 <span class="text-xs font-mono text-slate-400">e/s</span>
                             </div>
                         </div>
-                        <span class="text-xs font-bold font-mono text-indigo-400 uppercase mt-4 bg-indigo-500/10 border border-indigo-500/20 px-2.5 py-2 rounded-xl text-center block tracking-wide select-none">
-                            Bypasses External Cloud API Lag
+                        <span class="text-xs font-bold font-mono text-indigo-405 uppercase mt-4 bg-indigo-500/5 border border-indigo-500/15 py-2 rounded-xl text-center block tracking-wider select-none">
+                            Bypasses Cloud API Lag
                         </span>
                     </div>
 
                     <!-- Vit 2: Latency -->
                     <div class="glass-card rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden group">
                         <div class="space-y-1">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 font-mono">Ingest Latency</span>
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-400 font-mono">Ingest Latency</span>
                             <div class="flex items-baseline space-x-1.5">
                                 <span id="metric-p50" class="text-4xl font-extrabold tracking-tight text-slate-100 font-mono">66</span>
                                 <span class="text-xs font-mono text-emerald-400 font-semibold">μs</span>
                             </div>
                         </div>
-                        <span class="text-xs font-bold font-mono text-emerald-400 uppercase mt-4 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-2 rounded-xl text-center block tracking-wide select-none">
-                            15x faster than a human blink
+                        <span class="text-xs font-bold font-mono text-emerald-400 uppercase mt-4 bg-emerald-500/5 border border-emerald-500/15 py-2 rounded-xl text-center block tracking-wider select-none">
+                            15x Faster than Blink
                         </span>
                     </div>
 
                     <!-- Vit 3: Cache Hit Rate -->
                     <div class="glass-card rounded-2xl p-5 flex flex-col justify-between relative overflow-hidden group">
                         <div class="space-y-1">
-                            <span class="text-xs font-semibold uppercase tracking-wider text-slate-400 font-mono">Cache Hit Rate</span>
+                            <span class="text-xs font-bold uppercase tracking-widest text-slate-400 font-mono">Cache Hit Rate</span>
                             <div class="flex items-baseline space-x-1.5">
                                 <span id="metric-cache-hit" class="text-4xl font-extrabold tracking-tight text-slate-100 font-mono">73.8</span>
                                 <span class="text-xs font-mono text-slate-400">%</span>
                             </div>
                         </div>
-                        <span class="text-xs font-bold font-mono text-emerald-400 uppercase mt-4 bg-emerald-500/10 border border-emerald-500/20 px-2.5 py-2 rounded-xl text-center block tracking-wide select-none animate-pulse-slow">
+                        <span class="text-xs font-bold font-mono text-emerald-400 uppercase mt-4 bg-emerald-500/5 border border-emerald-500/15 py-2 rounded-xl text-center block tracking-wider select-none animate-pulse-slow">
                             100% SLO Compliant
                         </span>
                     </div>
@@ -286,7 +307,7 @@
                     </div>
                     <!-- Monospace logging container -->
                     <div id="log-console" class="flex-1 overflow-y-auto bg-slate-950/80 border border-slate-900 rounded-xl p-4 font-mono text-xs text-slate-400 space-y-2 leading-relaxed shadow-inner">
-                        <div class="text-slate-650 text-xs">[SYSTEM] Initializing telemetry monitor on core ports...</div>
+                        <div class="text-slate-655 text-xs">[SYSTEM] Initializing telemetry monitor on core ports...</div>
                         <div class="text-emerald-500 text-xs">[SYSTEM] 64-shard async cache proxy online (speculative routing active).</div>
                         <div class="text-emerald-400 blinking-cursor">_</div>
                     </div>
@@ -394,7 +415,7 @@
             } else if (type === 'warning') {
                 entry.innerHTML = `<span class="text-amber-450 font-bold">[WARN]</span> <span class="text-slate-500">${timeStr}</span> &mdash; <span class="text-amber-400">${message}</span>`;
             } else {
-                entry.innerHTML = `<span class="text-slate-500 font-bold">[INFO]</span> <span class="text-slate-500">${timeStr}</span> &mdash; <span class="text-slate-450">${message}</span>`;
+                entry.innerHTML = `<span class="text-slate-500 font-bold">[INFO]</span> <span class="text-slate-500">${timeStr}</span> &mdash; <span class="text-slate-455">${message}</span>`;
             }
 
             const cursor = consoleEl.querySelector('.blinking-cursor');
@@ -426,7 +447,7 @@
                 
                 if (i === stepNum) {
                     node.className = "w-10 h-10 rounded-full border-2 text-xs font-bold transition-all duration-300 flex items-center justify-center cursor-pointer stepper-node-active scale-110 shadow-lg shadow-emerald-500/5";
-                    label.className = "text-xs font-bold uppercase tracking-wider font-mono text-emerald-400 mt-2 transition-colors";
+                    label.className = "text-xs font-bold uppercase tracking-wider font-mono text-emerald-450 mt-2 transition-colors";
                 } else if (i < stepNum) {
                     node.className = "w-10 h-10 rounded-full border-2 border-indigo-500/40 bg-indigo-500/5 text-indigo-400 flex items-center justify-center font-mono text-xs font-bold transition-all duration-300 cursor-pointer";
                     label.className = "text-xs font-bold uppercase tracking-wider font-mono text-indigo-400 mt-2 transition-colors";
@@ -434,6 +455,18 @@
                     node.className = "w-10 h-10 rounded-full bg-slate-900 border-2 border-slate-700 text-slate-500 flex items-center justify-center font-mono text-xs font-bold transition-all duration-300 cursor-pointer hover:border-slate-500";
                     label.className = "text-xs font-bold uppercase tracking-wider font-mono text-slate-500 mt-2 transition-colors";
                 }
+            }
+
+            // Update Dynamic Glow & Borders of Left Panel based on active campaign color theme
+            const leftPanel = document.getElementById('left-panel');
+            if (stepNum === 1) {
+                leftPanel.className = "flex flex-col space-y-6 transition-all duration-500 ease-out hover:scale-[1.01] rounded-3xl p-1 border border-indigo-500/10 shadow-[0_0_40px_rgba(99,102,241,0.06)]";
+            } else if (stepNum === 2) {
+                leftPanel.className = "flex flex-col space-y-6 transition-all duration-500 ease-out hover:scale-[1.01] rounded-3xl p-1 border border-emerald-500/10 shadow-[0_0_40px_rgba(16,185,129,0.06)]";
+            } else if (stepNum === 3) {
+                leftPanel.className = "flex flex-col space-y-6 transition-all duration-500 ease-out hover:scale-[1.01] rounded-3xl p-1 border border-rose-500/10 shadow-[0_0_40px_rgba(244,63,94,0.06)]";
+            } else if (stepNum === 4) {
+                leftPanel.className = "flex flex-col space-y-6 transition-all duration-500 ease-out hover:scale-[1.01] rounded-3xl p-1 border border-amber-500/10 shadow-[0_0_40px_rgba(245,158,11,0.06)]";
             }
 
             // Update Dynamic Canvas Tags
@@ -448,16 +481,18 @@
 
             // Update Intent Text & CTR
             document.getElementById('nike-intent-mutation').textContent = data.intent;
-            document.getElementById('nike-ctr-score').textContent = `CTR Score: ${data.ctr.split(' ')[0]}`;
+            document.getElementById('nike-ctr-score').textContent = `CTR: ${data.ctr.split(' ')[0]}`;
 
-            // Update Banner Card Layout with increased readability
+            // Update Banner Card Layout with increased readability and custom border/background theme
+            const bannerContainer = document.getElementById('nike-banner-container');
+            bannerContainer.className = `relative rounded-2xl border p-6 min-h-[220px] flex flex-col justify-between transition-all duration-500 shadow-2xl shadow-black/30 ${data.bannerClass}`;
+
             const banner = document.getElementById('nike-banner');
-            banner.className = `relative overflow-hidden rounded-xl p-6 transition-all duration-500 ${data.bannerClass}`;
             
             // Build visual tag badges inside the banner
             let tagsHTML = '';
             data.tags.forEach(t => {
-                tagsHTML += `<span class="px-2.5 py-1 rounded text-xs font-mono font-extrabold uppercase bg-slate-950/40 border border-slate-750/25 text-slate-300">${t}</span>`;
+                tagsHTML += `<span class="px-2.5 py-1 rounded text-xs font-mono font-extrabold uppercase bg-slate-950/40 border border-slate-750/25 text-slate-350">${t}</span>`;
             });
 
             banner.innerHTML = `
@@ -467,7 +502,7 @@
                     </div>
                     <span class="text-xs font-bold uppercase tracking-widest text-slate-400 font-mono block opacity-80">${data.campaign}</span>
                     <h4 class="text-xl font-extrabold text-slate-100 leading-tight sm:text-2xl">${data.subheadline}</h4>
-                    <p class="text-sm text-slate-350 mt-2 max-w-lg font-light leading-relaxed">${data.tagline}</p>
+                    <p class="text-sm text-slate-300 mt-2 max-w-lg font-light leading-relaxed">${data.tagline}</p>
                 </div>
                 <!-- Interactive layout vector background -->
                 <div class="absolute -right-6 -bottom-8 w-28 h-28 opacity-15 pointer-events-none z-0 text-slate-350">
@@ -604,7 +639,7 @@
 
             const btn = document.getElementById('spike-btn');
             btn.disabled = true;
-            btn.className = "py-2.5 px-5 rounded-xl border border-rose-500/50 bg-rose-950/20 text-rose-400 font-mono text-[11px] font-bold tracking-wider transition-all duration-300 flex items-center justify-center space-x-2 animate-pulse cursor-not-allowed";
+            btn.className = "py-2.5 px-5 rounded-xl border border-rose-500/50 bg-rose-950/20 text-rose-400 font-mono text-xs font-bold tracking-wider transition-all duration-300 flex items-center justify-center space-x-2 animate-pulse cursor-not-allowed";
             btn.innerHTML = `
                 <svg class="animate-spin h-3.5 w-3.5 mr-2 text-rose-455" viewBox="0 0 24 24" fill="none">
                     <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
