@@ -238,8 +238,9 @@ async def get_user_profile(user_id: str, request: Request) -> ProfileSnapshot:
 
 # ─── Health & Observability ──────────────────────────────────────────────────
 
-@router.get(
+@router.api_route(
     "/health",
+    methods=["GET", "HEAD"],
     response_model=HealthStatus,
     summary="System health check with live performance metrics",
     description=(
