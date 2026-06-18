@@ -44,7 +44,7 @@ import time
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
-from fastapi.responses import HTMLResponse, JSONResponse
+from fastapi.responses import HTMLResponse, JSONResponse, FileResponse
 
 from aerostream.cache import CacheManager
 from aerostream.config import settings
@@ -161,7 +161,25 @@ async def serve_telemetry_dashboard():
         )
 
 
-# ─── Entry Point ─────────────────────────────────────────────────────────────
+# ── Pitch Deck PDF Endpoint ──
+@app.get("/pitch-deck.pdf", include_in_schema=False)
+async def serve_pitch_deck():
+    """
+    Serves the AeroStream pitch deck PDF directly from the workspace root.
+    Used by the in-app CTA button to open/embed the presentation.
+    """
+    import os
+    pdf_path = "AeroStream_PDF.pdf"
+    if os.path.isfile(pdf_path):
+        return FileResponse(
+            pdf_path,
+            media_type="application/pdf",
+            content_disposition_type="inline",
+        )
+    return JSONResponse(
+        content={"error": "Pitch deck PDF not found"},
+        status_code=404,
+    )
 
 if __name__ == "__main__":
     import uvicorn

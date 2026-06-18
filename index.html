@@ -73,6 +73,47 @@
             background: rgba(16, 185, 129, 0.05) !important;
             color: #10b981 !important;
         }
+
+        /* ── AeroStream Pitch Deck CTA Animations ── */
+        @keyframes aero-cta-glow {
+            0%, 100% {
+                box-shadow: 0 0 8px rgba(245, 158, 11, 0.15), 0 0 20px rgba(245, 158, 11, 0.05);
+                border-color: rgba(245, 158, 11, 0.3);
+            }
+            50% {
+                box-shadow: 0 0 16px rgba(245, 158, 11, 0.35), 0 0 40px rgba(245, 158, 11, 0.1);
+                border-color: rgba(245, 158, 11, 0.55);
+            }
+        }
+        .aero-cta-pulse {
+            animation: aero-cta-glow 2.5s ease-in-out infinite;
+        }
+        .aero-cta-pulse:hover {
+            animation: none;
+            box-shadow: 0 0 20px rgba(245, 158, 11, 0.4), 0 0 50px rgba(245, 158, 11, 0.15);
+            border-color: rgba(245, 158, 11, 0.7);
+            transform: scale(1.03);
+        }
+
+        /* ── Pitch Deck Modal Transitions ── */
+        .aero-modal-backdrop {
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.35s ease, visibility 0.35s ease;
+        }
+        .aero-modal-backdrop.aero-modal-visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .aero-modal-content {
+            transform: scale(0.92) translateY(20px);
+            opacity: 0;
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+        }
+        .aero-modal-backdrop.aero-modal-visible .aero-modal-content {
+            transform: scale(1) translateY(0);
+            opacity: 1;
+        }
     </style>
 </head>
 <body class="h-full bg-slate-950 text-slate-100 antialiased font-sans select-none overflow-x-hidden">
@@ -109,6 +150,15 @@
                     <span class="h-1.5 w-1.5 rounded-full bg-indigo-400 mr-2 animate-pulse"></span>
                     SANDBOX ACTIVE
                 </div>
+                <!-- ═══ PITCH DECK CTA WIDGET ═══ -->
+                <button
+                    id="aero-pitch-deck-cta"
+                    class="aero-cta-pulse rounded-full border border-amber-500/30 bg-amber-500/5 px-4 py-1.5 text-[10px] font-semibold text-amber-400 uppercase tracking-wider flex items-center space-x-2 cursor-pointer transition-all duration-300 hover:bg-amber-500/10 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:ring-offset-2 focus:ring-offset-slate-950"
+                    aria-label="View Pitch Deck and Architecture Spec"
+                >
+                    <span class="text-sm leading-none">⚡</span>
+                    <span>VIEW PITCH DECK &amp; ARCHITECTURE SPEC</span>
+                </button>
             </div>
         </header>
 
@@ -810,6 +860,133 @@
             // Check Live API connection
             checkBackendHealth();
         });
+    </script>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- PITCH DECK MODAL OVERLAY (Full-Screen PDF Viewer)                      -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <div
+        id="aero-pitch-modal"
+        class="aero-modal-backdrop fixed inset-0 z-[9999] flex items-center justify-center"
+        style="background: rgba(2, 6, 23, 0.88); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);"
+        role="dialog"
+        aria-modal="true"
+        aria-label="AeroStream Pitch Deck Viewer"
+    >
+        <div class="aero-modal-content relative w-[96vw] h-[94vh] max-w-[1600px] rounded-2xl overflow-hidden border border-slate-700/40 shadow-2xl" style="background: rgba(15, 23, 42, 0.95);">
+            <!-- Modal Header Bar -->
+            <div class="flex items-center justify-between px-6 py-3 border-b border-slate-800/60" style="background: rgba(15, 23, 42, 0.98);">
+                <div class="flex items-center space-x-3">
+                    <span class="text-amber-400 text-base">⚡</span>
+                    <span class="text-sm font-bold text-slate-200 tracking-tight">AeroStream — Pitch Deck & Architecture Specification</span>
+                    <span class="text-[9px] font-mono text-slate-500 uppercase tracking-widest bg-slate-800/60 px-2 py-0.5 rounded-full">PDF Viewer</span>
+                </div>
+                <button
+                    id="aero-pitch-modal-close"
+                    class="flex items-center space-x-2 rounded-lg border border-slate-700/50 bg-slate-800/60 px-3 py-1.5 text-xs font-semibold text-slate-300 uppercase tracking-wider cursor-pointer transition-all duration-200 hover:bg-red-500/15 hover:border-red-500/30 hover:text-red-400 focus:outline-none focus:ring-2 focus:ring-red-500/30"
+                    aria-label="Close pitch deck viewer"
+                >
+                    <span>Close</span>
+                    <span class="text-base leading-none">&times;</span>
+                </button>
+            </div>
+            <!-- Embedded PDF Content -->
+            <div class="w-full" style="height: calc(94vh - 52px);">
+                <iframe
+                    id="aero-pitch-iframe"
+                    src=""
+                    class="w-full h-full border-0"
+                    title="AeroStream Pitch Deck PDF"
+                    loading="lazy"
+                ></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <!-- PITCH DECK CTA — IIFE JavaScript Controller (Global Scope Isolated)    -->
+    <!-- ═══════════════════════════════════════════════════════════════════════ -->
+    <script>
+    (function() {
+        'use strict';
+
+        /* ── Configuration ── */
+        var config = {
+            USE_MODAL_EMBED: true,
+            PITCH_DECK_URL: 'https://drive.google.com/file/d/1RdJRA0nv2dta_hfZ-_Bry0OLg2PPlWqT/preview',
+            DIRECT_DOWNLOAD_URL: '/pitch-deck.pdf'
+        };
+
+        /* Expose config for runtime toggling */
+        window.AeroStreamHack = {
+            config: config,
+            openModal: openModal,
+            closeModal: closeModal
+        };
+
+        /* ── DOM References ── */
+        var ctaButton = document.getElementById('aero-pitch-deck-cta');
+        var modal = document.getElementById('aero-pitch-modal');
+        var modalClose = document.getElementById('aero-pitch-modal-close');
+        var iframe = document.getElementById('aero-pitch-iframe');
+
+        /* ── Modal Open ── */
+        function openModal() {
+            if (!iframe.src || iframe.src === '' || iframe.src === window.location.href) {
+                iframe.src = config.PITCH_DECK_URL;
+            }
+            modal.classList.add('aero-modal-visible');
+            document.body.style.overflow = 'hidden';
+        }
+
+        /* ── Modal Close ── */
+        function closeModal() {
+            modal.classList.remove('aero-modal-visible');
+            document.body.style.overflow = '';
+        }
+
+        /* ── CTA Click Handler ── */
+        function handleCTAClick(e) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            if (config.USE_MODAL_EMBED) {
+                openModal();
+            } else {
+                window.open('https://drive.google.com/file/d/1RdJRA0nv2dta_hfZ-_Bry0OLg2PPlWqT/view?usp=sharing', '_blank', 'noopener,noreferrer');
+            }
+        }
+
+        /* ── Event Bindings ── */
+        if (ctaButton) {
+            ctaButton.addEventListener('click', handleCTAClick, false);
+        }
+
+        if (modalClose) {
+            modalClose.addEventListener('click', function(e) {
+                e.preventDefault();
+                e.stopPropagation();
+                closeModal();
+            }, false);
+        }
+
+        /* Close on backdrop click (outside modal content) */
+        if (modal) {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    closeModal();
+                }
+            }, false);
+        }
+
+        /* Close on Escape key */
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape' && modal && modal.classList.contains('aero-modal-visible')) {
+                closeModal();
+            }
+        }, false);
+
+    })();
     </script>
 </body>
 </html>
